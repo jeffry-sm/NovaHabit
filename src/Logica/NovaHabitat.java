@@ -44,27 +44,7 @@ public class NovaHabitat {
      * @param args the command line arguments
      */
     
-    //-- Método para registrar habitaciones Version 1
-    /*public static void insertarHabitaciones(){
-        System.out.println("---------------------------------------");
-        System.out.println("|       REGISTRO DE HABITACIONES      |");
-        System.out.println("---------------------------------------");
-        System.out.println("");
-        System.out.println("Digite la posicion para almacenar ");
-        System.out.println("La Habitacion (1-200): ");
-        int posicion;
-        posicion = leer.nextInt();
-        //int posicion = leer.nextInt(); //-- Otra posibilidad de variable
-        leer.nextLine(); // manejo de errores
-        if (nombreHabitaciones[posicion-1] == "")   {
-            System.out.println("Digite el nombre para la habitacion: ");
-            nombreHabitaciones[posicion-1] = leer.nextLine();
-        } else{
-            System.out.println("La posicion esta ocupada");
-        }
-    } */
-    
-    //--Método para obtener la siguiente posición automáticamente -Insertar
+        //--Método para obtener la siguiente posición automáticamente -Insertar
     public static int siguienteHab(){
         int indice = -1;
         for (int i = 0; i < 200; i++){
@@ -82,19 +62,7 @@ public class NovaHabitat {
         return leer.nextLine();
     }
     
-    //-- Método para registrar habitaciones Version 2
-    /*public static void insertarHabitaciones(){
-        System.out.println("---------------------------------------");
-        System.out.println("|       REGISTRO DE HABITACIONES      |");
-        System.out.println("---------------------------------------");
-        System.out.println("");
-                
-        leer.nextLine();
-        int posicion = siguienteHab();
-        nombreHabitaciones[posicion] = obtenerNombre("habitacion: ");
-    } */
-    
-    //-- Método para registrar habitaciones Version 3
+        //-- Método para registrar habitaciones
     public static void insertarHabitaciones(){
         System.out.println("---------------------------------------");
         System.out.println("|       REGISTRO DE HABITACIONES      |");
@@ -130,28 +98,7 @@ public class NovaHabitat {
         nombreHabitaciones[fila][4] = String.valueOf(monto);        
     }     
     
-    //-- Método para modificar habitaciones
-    /*public static void modificarHabitaciones(){
-        System.out.println("---------------------------------------");
-        System.out.println("|     MODIFICACION DE HABITACIONES    |");
-        System.out.println("---------------------------------------");
-        System.out.println("");
-        System.out.println("Digite la posicion para modificar ");
-        System.out.println("La Habitacion (1-200): ");
-        int posicion;
-        posicion = leer.nextInt();
-        //int posicion = leer.nextInt(); //-- Otra posibilidad de variable
-        leer.nextLine(); // manejo de errores
-       
-        if ( (nombreHabitaciones[posicion-1] != null) && 
-                (nombreHabitaciones[posicion-1] != "")) {
-             nombreHabitaciones[posicion-1] = obtenerNombre("habitacion ("+(posicion)+"): " );
-        } else {
-            System.out.println("La posicion esta vacia");
-        }
-    } */
-    
-    //-- Método para modificar habitaciones Version 2
+        //-- Método para modificar habitaciones
     public static void modificarHabitaciones(){
         System.out.println("---------------------------------------");
         System.out.println("|     MODIFICACION DE HABITACIONES    |");
@@ -187,21 +134,7 @@ public class NovaHabitat {
         }    
     }     
             
-    //-- Método para borrar habitaciones
-    /*    public static void borrarHabitaciones(){
-        System.out.println("---------------------------------------");
-        System.out.println("|     ELIMINAACION DE HABITACIONES    |");
-        System.out.println("---------------------------------------");
-        System.out.println("");
-        System.out.println("Digite la posicion para eliminar ");
-        System.out.println("La Habitacion (1-200): ");
-        int posicion;
-        posicion = leer.nextInt();
-        //Perfecto
-        nombreHabitaciones[posicion-1] = "";
-    }*/
-        
-    //-- Método para borrar habitaciones Versión 2
+        //-- Método para borrar habitaciones
         public static void borrarHabitaciones(){
         System.out.println("---------------------------------------");
         System.out.println("|     ELIMINAACION DE HABITACIONES    |");
@@ -221,23 +154,7 @@ public class NovaHabitat {
         }
     }        
     
-    //-- NULO NO ES VACIO 
-    //-- Método para Mostrar habitaciones
-    /*public static void mostrarHabitaciones(){
-        System.out.println("---------------------------------------");
-        System.out.println("|       LISTADO DE HABITACIONES       |");
-        System.out.println("---------------------------------------");
-        System.out.println("");
-        
-        for (int indice = 0; indice < 200; indice++){
-            if ((nombreHabitaciones[indice] != null) 
-                    && ( nombreHabitaciones[indice] != "" )){
-                System.out.println("Posicion " + (indice+1) + ": " + nombreHabitaciones[indice] );
-            }
-        }
-    }  */
-    
-    //-- Método para Mostrar habitaciones Versión 2
+        //-- Método para Mostrar habitaciones
     public static void mostrarHabitaciones(){
         System.out.println("---------------------------------------");
         System.out.println("|       LISTADO DE HABITACIONES       |");
@@ -325,54 +242,6 @@ public class NovaHabitat {
                 case 4: misMetodos.mostrarClientes();
                         break;
             }
-            
-            
-            /*
-            A veces, cuando se cambia el tipo de valor a leer, java
-            pierde efectividad, por eso, se envía un leer solito.
-            
-            
-                  
-            leer.nextLine();
-            
-            if (operacion == 1){
-                //Ciclo for, para insertar 10 clientes de una vez
-                for (int i = 0; i < 10; i++ ){
-                    
-                    nombreCliente[i] = obtenerNombre("Cliente (" + i + "): ");
-                }
-                //Inserción sin el ciclo
-                nombreCliente[10] = "Irene";
-                nombreCliente[11] = "Carmen";
-                nombreCliente[12] = "Linette";
-                nombreCliente[13] = "Yesenia";
-                nombreCliente[14] = "Karina";
-                nombreCliente[15] = "Carla";
-                nombreCliente[16] = "Fabiana";
-                nombreCliente[17] = "Laura";
-                nombreCliente[18] = "Jennifer";
-                nombreCliente[19] = "Paola";
-            }
-            
-            if (operacion == 2){
-                //-- Modificar los valores (Los indices inician en 0
-                //-- pero al usuario hay que mostrarle desde el 1 )
-                System.out.println("Digite el índice a modificar (1-100): ");
-                int indice = leer.nextInt();
-                leer.nextLine();//--Control de errores al cambiar tipo de dato leido
-                System.out.println("Digite el nuevo nombre para el registro: ");
-                nombreCliente[indice-1] = leer.nextLine(); 
-            }
-            
-            if (operacion == 4) { 
-                //con el ciclo for, mostramos los datos
-                for (int i = 0; i < 20; i++){
-                    System.out.println("Cliente " + (i+1)+ ": " + nombreCliente[i]);
-                }
-            }
-                
-        */
-                
         }while (operacion < 5);
     }
     
@@ -608,7 +477,7 @@ public class NovaHabitat {
             operacion = leer.nextInt();
             
             switch (operacion) {
-                case 1: misMetodos.insertarReserva();
+                case 1: insertarReservaciones();
                         break;
                 case 2: modificaReservacion();
                         break;
@@ -672,16 +541,6 @@ public class NovaHabitat {
             nombreHabitaciones[i][j] = "";
         }
         }
-        //--Llenar el array Reservaciones con vacios opcion 1
-        /*for (int i =0; i < 100; i++ ){
-            reservacion[i][0] = "";
-            reservacion[i][1] = "";
-            reservacion[i][2] = "";
-            reservacion[i][3] = "";
-            reservacion[i][4] = "";
-            reservacion[i][5] = "";
-        }*/
-        
         //--Llenar el array Reservaciones con vacios opcion 2
         for (int i =0; i < 100; i++ ){ //Filas
             for (int j =0; j < 6; j++){ //Columnas
@@ -710,83 +569,6 @@ public class NovaHabitat {
             System.out.println("");
             System.out.print("Opcion: ");
             opcion = leer.nextInt();
-
-            /*
-            //Estructura de control condicional if (expresión) acción
-            // el doble igual es para comparar == // Condicionales simples
-            if (opcion == 1){
-                menuHabitaciones();
-            }
-            if (opcion == 2){
-                menuClientes();
-            }
-            if (opcion == 3){
-                menuEmpleados();
-            }
-            if (opcion == 4){
-                menuReservaciones();
-            }
-            if (opcion == 5){
-                menuRegistro();
-            }
-            if (opcion == 6){
-                menuReportes();
-            }
-            if  ((opcion > 6) || (opcion < 1)){
-                System.exit(0);
-            }*/
-
-            /*
-            //-- Condicionales Dobles y Anidadas
-            if ((opcion > 6) || (opcion < 1)){
-                System.exit(0); 
-            } else {
-                System.out.println("Aca puedo escoger las opciones validas");
-                if (opcion == 1) {
-                    menuHabitaciones();
-                } else {
-                    if (opcion == 2) {
-                        menuClientes();
-                    } else {
-                        if (opcion == 3) {
-                            menuEmpleados();
-                        } else {
-                            if (opcion == 4) {
-                                menuReservaciones();
-                            } else {
-                                if (opcion == 5) {
-                                    menuRegistro();
-                                } else {
-                                    if (opcion == 6) {
-                                        menuReportes();
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                }
-            }
-            */
-
-            /*
-            //- Condicionales anidadas, Version 2
-            if ((opcion > 6) || (opcion < 1)){
-                System.exit(0); 
-            } else if (opcion == 1) {           // LLAVES 6
-                    menuHabitaciones();
-                } else if (opcion == 2) {
-                        menuClientes();
-                    } else if (opcion == 3) {
-                            menuEmpleados();
-                        } else if (opcion == 4) {
-                                menuReservaciones();
-                            } else if (opcion == 5) {
-                                    menuRegistro();
-                                } else if (opcion == 6) {
-                                        menuReportes();
-                                }
-            */
 
             //-- Condicional Switch /cambio ( parecido al if )
             switch (opcion){
