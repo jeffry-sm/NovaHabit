@@ -6,15 +6,9 @@ package Logica;
 
 import Datos.ObjCliente;
 import Datos.Estructuras;
-import Datos.ObjReservacion;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
-//-- Bibliontecas de trabajo con fechas
-import java.util.Date;
-import java.util.Calendar;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
 
 /**
  *    @author Jeffry SM
@@ -47,104 +41,32 @@ public class Metodos {
     }
     
     
-    //--Método para devolver el siguiente # de reserva
-    public int siguienteReserva() {
-        int resultado = 1;
-        //--Nueva lista para trabajar localmente (Reservaciones)
-        ArrayList<ObjReservacion> misReservas = Almacen.listarReservaciones();
-        for (int i = 0; i < misReservas.size(); i++) {
-            if (resultado < misReservas.get(i).getId() ) {
-                resultado = misReservas.get(i).getId() + 1;
-            }
-        }
-        return resultado;
-    }
-    
-    
-    public int buscarCliente(String cedula) {
-        int resultado = -1;
-        
-        ArrayList<ObjCliente> misClientes = Almacen.listarClientes();
-        for (int i = 0; i < misClientes.size(); i++) {
-            if (cedula.equals(misClientes.get(i).getCedula() ) ) {
-                System.out.println(misClientes.get(i).getApellido1() + 
-                                   "" + misClientes.get(i).getApellido2() +
-                                   "" + misClientes.get(i).getNombre() );
-                resultado = misClientes.get(i).getId();
-            }
-        }
-        return resultado;
-    }
-    
-    
-    public void insertarReserva() {
+    public int buscarCliente(){
         System.out.println("---------------------------------------");
-        System.out.println("|       REGISTRAR RESERVACIONES       |");
+        System.out.println("|          BUSCAR  CLIENTE            |");
         System.out.println("---------------------------------------");
-        System.out.println("");
+        System.out.println(""); 
+        System.out.println("Digite la cedula del cliente: ");
+        //leer.nextLine();
+        String cedula = leer.nextLine();
+        int indice    = -1;
         
-        int id = siguienteReserva();
-        System.out.println("Identificador: " + id);
-        System.out.println("");
-        System.out.println("Digite la habitación: ");
-        int idHabitacion = leer.nextInt();
-        
-        String cedCliente = "";
-        int encuentraCli = -1;
-        do {
-            System.out.println("");
-            System.out.println("Digite la Cedula del Cliente: ");
-            cedCliente = leer.nextLine();
-            encuentraCli = buscarCliente(cedCliente);
-        } while ( encuentraCli == -1 );
-        
-        //-- Definir el formato de fecha (15/08/2026)
-        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-        formato.setLenient(false); //-- Rechaza fechas invalidas (30/02/2026)
-        
-        Date ingreso = null;
-        Date salida = null;
-        int dias = 0;
-        
-        try {
-             System.out.println("");
-             System.out.println("Digite la fecha de ingreso (dd/mm/aaaa): ");
-             String fechaIn = leer.nextLine();
-             ingreso = formato.parse(fechaIn);
-             
-             System.out.println("Digite la cantidad de dias a hospedar:");
-             dias = leer.nextInt();
-             
-             //-- Variable calendario para manejar cálculos de fechas
-             Calendar miCalendario = Calendar.getInstance();
-             //-- Asignamos la fecha inicial al calendario
-             miCalendario.setTime(ingreso);
-             //-- Sumamos los dias a la fecha inicial
-             miCalendario.add(Calendar.DAY_OF_YEAR, dias);
-             //-- Asignar la nueva a Salida
-             salida = miCalendario.getTime();
-             System.out.println("");
-             System.out.println("Fecha de Salida" + formato.format(salida));
-             
-        } catch ( ParseException e ) {
-            System.out.println(e.toString());
+        //--Nueva lista para trabajar localmente (clientes)
+        ArrayList<ObjCliente> misClientes = new ArrayList<>();
+        //-- Llenamos esta lista con una copia de la original
+        misClientes = Almacen.listarClientes();
+        //--Recorrer la copia de la lista, para extraer los objetos
+        for(int i = 0; i < misClientes.size();i++){
+            ObjCliente cliente = new ObjCliente();
+            cliente = misClientes.get(i);
+            if (cliente.getCedula().equals(cedula)){
+                indice = i;
+                break;
+            }
             
         }
-        
-        System.out.println("");
-        System.out.println("Digite el monto del hospedaje: ");
-        double monto = leer.nextDouble();
-        
-        ObjReservacion nuevaReserva = new ObjReservacion (id, 
-                                          idHabitacion, cedCliente,
-                                          ingreso, salida, monto, 1);
-        Almacen.agregarReservacion(nuevaReserva);
-        
-        // Ingreso; Salida; Monto;
-        
+        return indice;
     }
-    
-    
     
     public void insertarClientes(){
         //-- variable, instancia del objeto a usar
@@ -192,58 +114,6 @@ public class Metodos {
         
         Almacen.agregarCliente(nuevoCliente);
         Almacen.escribeArchivoClientes();
-    }
-    
-    public void mostrarClientes(){
-        System.out.println("---------------------------------------");
-        System.out.println("|          LISTAR  CLIENTES           |");
-        System.out.println("---------------------------------------");
-        System.out.println("");        
-        
-        //--Nueva lista para trabajar localmente (clientes)
-        ArrayList<ObjCliente> misClientes = new ArrayList<>();
-        //-- Llenamos esta lista con una copia de la original
-        misClientes = Almacen.listarClientes();
-        //--Recorrer la copia de la lista, para extraer los objetos
-        for(int i = 0; i < misClientes.size();i++){
-            ObjCliente cliente = new ObjCliente();
-            cliente = misClientes.get(i);
-            
-            System.out.println("Id Cliente: " + cliente.getId() );
-            System.out.println("Nombre: " + cliente.getApellido1() +
-                               " " + cliente.getNombre());
-            System.out.println("Cedula " + cliente.getCedula());
-            System.out.println("Telefono: " + cliente.getTelefono() );
-            System.out.println("");
-            System.out.println("---------------------------------------");
-        }
-    }
-    
-    public int buscarCliente(){
-        System.out.println("---------------------------------------");
-        System.out.println("|          BUSCAR  CLIENTE            |");
-        System.out.println("---------------------------------------");
-        System.out.println(""); 
-        System.out.println("Digite la cedula del cliente: ");
-        //leer.nextLine();
-        String cedula = leer.nextLine();
-        int indice    = -1;
-        
-        //--Nueva lista para trabajar localmente (clientes)
-        ArrayList<ObjCliente> misClientes = new ArrayList<>();
-        //-- Llenamos esta lista con una copia de la original
-        misClientes = Almacen.listarClientes();
-        //--Recorrer la copia de la lista, para extraer los objetos
-        for(int i = 0; i < misClientes.size();i++){
-            ObjCliente cliente = new ObjCliente();
-            cliente = misClientes.get(i);
-            if (cliente.getCedula().equals(cedula)){
-                indice = i;
-                break;
-            }
-            
-        }
-        return indice;
     }
     
     public void modificarCliente(){
@@ -300,5 +170,30 @@ public class Metodos {
                               // Titulo      Icono
      }
    }   
-}
+    public void mostrarClientes(){
+        System.out.println("---------------------------------------");
+        System.out.println("|          LISTAR  CLIENTES           |");
+        System.out.println("---------------------------------------");
+        System.out.println("");        
+        
+        //--Nueva lista para trabajar localmente (clientes)
+        ArrayList<ObjCliente> misClientes = new ArrayList<>();
+        //-- Llenamos esta lista con una copia de la original
+        misClientes = Almacen.listarClientes();
+        //--Recorrer la copia de la lista, para extraer los objetos
+        for(int i = 0; i < misClientes.size();i++){
+            ObjCliente cliente = new ObjCliente();
+            cliente = misClientes.get(i);
+            
+            System.out.println("Id Cliente: " + cliente.getId() );
+            System.out.println("Nombre: " + cliente.getApellido1() +
+                               " " + cliente.getNombre());
+            System.out.println("Cedula " + cliente.getCedula());
+            System.out.println("Telefono: " + cliente.getTelefono() );
+            System.out.println("");
+            System.out.println("---------------------------------------");
+        }
+    }
+    
 
+}

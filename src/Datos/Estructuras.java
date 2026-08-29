@@ -172,6 +172,26 @@ public class Estructuras {
 
      // ------------ Métodos de Trabajo ----------------
      
+     // Insertar habitacion en la lista
+     public void agregarHabitacion(ObjHabitacion miHabitacion) {
+       listaHabitaciones.add(miHabitacion);  
+     }
+     
+     public void editarHabitacion(int indice, ObjHabitacion miHabitacion) {
+        listaHabitaciones.set(indice, miHabitacion);
+     }
+     
+     public void quitarHabitacion(int indice) {
+         listaHabitaciones.remove(indice);
+     }
+     
+     public ArrayList<ObjHabitacion> listarHabitaciones() {
+        return  new ArrayList<>(listaHabitaciones);
+     }  
+     
+     
+     
+     
      // Insertar clientes en la lista
      public void agregarCliente(ObjCliente miCliente) {
        listaClientes.add(miCliente);  
@@ -217,27 +237,7 @@ public class Estructuras {
      
  
      
-    // Insertar habitacion en la lista
-     public void agregarHabitacion(ObjHabitacion miHabitacion) {
-       listaHabitaciones.add(miHabitacion);  
-     }
-     
-     public void editarHabitacion(int indice, ObjHabitacion miHabitacion) {
-        listaHabitaciones.set(indice, miHabitacion);
-     }
-     
-     public void quitarHabitacion(int indice) {
-         listaHabitaciones.remove(indice);
-     }
-     
-     public ArrayList<ObjHabitacion> listarHabitaciones() {
-        return  new ArrayList<>(listaHabitaciones);
-     }  
-     
-     
-     
-     
-     // Insertar reservacion en la lista
+    // Insertar reservacion en la lista
      public void agregarReservacion(ObjReservacion miReservacion) {
        listaReservaciones.add(miReservacion);  
      }
