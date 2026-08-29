@@ -44,7 +44,68 @@ public class NovaHabitat {
      * @param args the command line arguments
      */
     
-        //--Método para obtener la siguiente posición automáticamente -Insertar
+        //-- Método para el Menú Principal
+    public static void menuPrincipal(){
+        
+        //--Llenar el array Habitaciones con vacios
+        for (int i = 0; i < 200; i++) {
+            for (int j = 0; j < 5; j++){
+            nombreHabitaciones[i][j] = "";
+        }
+        }
+        //--Llenar el array Reservaciones con vacios opcion 2
+        for (int i =0; i < 100; i++ ){ //Filas
+            for (int j =0; j < 6; j++){ //Columnas
+                reservacion[i][j] = "";
+            }
+        }
+        
+       
+        int opcion = 0; //Variable Local/contexto
+        //-- Inicio de la repetición do-while
+        do{
+            System.out.println("----------------------------------------");
+            System.out.println("|             NOVA HABITAT             |");
+            System.out.println("----------------------------------------");
+            System.out.println("Ingrese una opcion (1-9) luego presione ");
+            System.out.println("la tecla enter.");
+            System.out.println("");
+            System.out.println("1. Habitaciones ");
+            System.out.println("2. Clientes");
+            System.out.println("3. Empleados"); //TAREA -- id Identificación
+            System.out.println("4. Reservaciones");
+            System.out.println("5. Check-In / Check-Out");
+            System.out.println("6. Reportes");
+            System.out.println("9. Salir");
+            System.out.println("----------------------------------------");
+            System.out.println("");
+            System.out.print("Opcion: ");
+            opcion = leer.nextInt();
+
+            //-- Condicional Switch /cambio ( parecido al if )
+            switch (opcion){
+                case 1 : menuHabitaciones();
+                         break;
+                case 2 : menuClientes();
+                         break;
+                case 3 : menuEmpleados();
+                         break;
+                case 4 : menuReservaciones();
+                         break;
+                case 5 : menuRegistro();
+                         break;
+                case 6 : menuReportes();
+                         break;
+            }
+            if (opcion < 0 ){
+                System.exit(0); 
+            }
+        } while (opcion < 7); //condición de finalización del ciclo
+        
+    }   
+    
+    
+    //--Método para obtener la siguiente posición automáticamente -Insertar
     public static int siguienteHab(){
         int indice = -1;
         for (int i = 0; i < 200; i++){
@@ -531,67 +592,6 @@ public class NovaHabitat {
             operacion = leer.nextInt();
         }while (operacion < 3);
     }
-    
-    //-- Método para el Menú Principal
-    public static void menuPrincipal(){
-        
-        //--Llenar el array Habitaciones con vacios
-        for (int i = 0; i < 200; i++) {
-            for (int j = 0; j < 5; j++){
-            nombreHabitaciones[i][j] = "";
-        }
-        }
-        //--Llenar el array Reservaciones con vacios opcion 2
-        for (int i =0; i < 100; i++ ){ //Filas
-            for (int j =0; j < 6; j++){ //Columnas
-                reservacion[i][j] = "";
-            }
-        }
-        
-       
-        int opcion = 0; //Variable Local/contexto
-        //-- Inicio de la repetición do-while
-        do{
-            System.out.println("----------------------------------------");
-            System.out.println("|             NOVA HABITAT             |");
-            System.out.println("----------------------------------------");
-            System.out.println("Ingrese una opcion (1-9) luego presione ");
-            System.out.println("la tecla enter.");
-            System.out.println("");
-            System.out.println("1. Habitaciones ");
-            System.out.println("2. Clientes");
-            System.out.println("3. Empleados"); //TAREA -- id Identificación
-            System.out.println("4. Reservaciones");
-            System.out.println("5. Check-In / Check-Out");
-            System.out.println("6. Reportes");
-            System.out.println("9. Salir");
-            System.out.println("----------------------------------------");
-            System.out.println("");
-            System.out.print("Opcion: ");
-            opcion = leer.nextInt();
-
-            //-- Condicional Switch /cambio ( parecido al if )
-            switch (opcion){
-                case 1 : menuHabitaciones();
-                         break;
-                case 2 : menuClientes();
-                         break;
-                case 3 : menuEmpleados();
-                         break;
-                case 4 : menuReservaciones();
-                         break;
-                case 5 : menuRegistro();
-                         break;
-                case 6 : menuReportes();
-                         break;
-            }
-            if (opcion < 0 ){
-                System.exit(0); 
-            }
-        } while (opcion < 7); //condición de finalización del ciclo
-        
-    }   
-    
     
     //--Método Principal
     //-- static, para usar el elemento real, no su copia
