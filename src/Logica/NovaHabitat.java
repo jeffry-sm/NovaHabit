@@ -26,8 +26,6 @@ public class NovaHabitat {
     //--Arrays/Arreglos de 1 Dimensión
     static String[] nombreCliente = new String[100];
     
-    static String[][] nombreHabitaciones = new String[200][5]; // 1 pt +
-    
     static String[] nombreEmpleado = new String[100];
     //--Arrays/Arreglos de 2 Dimensiones
     //-- Primer corchete Filas, el segundo las columnas
@@ -37,7 +35,6 @@ public class NovaHabitat {
     4 Fecha Out, 5 Monto $$
     */
     static int numFactura = 258;
-    static int numHabitacion = 100;
     
     
     /**
@@ -47,12 +44,6 @@ public class NovaHabitat {
         //-- Método para el Menú Principal
     public static void menuPrincipal(){
         
-        //--Llenar el array Habitaciones con vacios
-        for (int i = 0; i < 200; i++) {
-            for (int j = 0; j < 5; j++){
-            nombreHabitaciones[i][j] = "";
-        }
-        }
         //--Llenar el array Reservaciones con vacios opcion 2
         for (int i =0; i < 100; i++ ){ //Filas
             for (int j =0; j < 6; j++){ //Columnas
@@ -104,139 +95,10 @@ public class NovaHabitat {
         
     }   
     
+    //---------------------------------------
+    // MENÚ DE HABITACIONES
+    //---------------------------------------
     
-    //--Método para obtener la siguiente posición automáticamente -Insertar
-    public static int siguienteHab(){
-        int indice = -1;
-        for (int i = 0; i < 200; i++){
-            if ( nombreHabitaciones[i][0].equals("") ){
-                indice = i;
-                break;
-            } 
-        }
-        return indice;
-    }
-    
-    //--Metodo para obtener el nombre de la habitación/Cliente
-    public static String obtenerNombre(String tabla){ //Parámetros
-        System.out.println("Digite el nombre de " + tabla);
-        return leer.nextLine();
-    }
-    
-        //-- Método para registrar habitaciones
-    public static void insertarHabitaciones(){
-        System.out.println("---------------------------------------");
-        System.out.println("|       REGISTRO DE HABITACIONES      |");
-        System.out.println("---------------------------------------");
-        System.out.println("");
-        int fila = siguienteHab();
-        leer.nextLine(); //Evitar error lectura
-        
-        // Columnas: 0 Identificador, 1 Tipo de Habitación, 2 Nombre Edificio, 3 Número de Piso 4 Costo por noche
-        // identificador o numero de factura correspondiente
-        int id = (fila+1) + numHabitacion; 
-        
-        System.out.println("");
-        System.out.println("Digite el tipo de Habitacion: ");
-        String tipHab = leer.nextLine();
-        
-        System.out.println("");
-        System.out.println("Digite el nombre del Edificio: ");
-        String edificio = leer.nextLine();
-        
-        System.out.println("");
-        System.out.println("Digite el numero de piso: ");
-        int piso = leer.nextInt();
-        
-        System.out.println("");
-        System.out.println("Digite el monto por noche de la habitacion: ");
-        double monto = leer.nextDouble();
-        
-        nombreHabitaciones[fila][0] = String.valueOf(id);
-        nombreHabitaciones[fila][1] = tipHab;
-        nombreHabitaciones[fila][2] = edificio;
-        nombreHabitaciones[fila][3] = String.valueOf(piso);
-        nombreHabitaciones[fila][4] = String.valueOf(monto);        
-    }     
-    
-        //-- Método para modificar habitaciones
-    public static void modificarHabitaciones(){
-        System.out.println("---------------------------------------");
-        System.out.println("|     MODIFICACION DE HABITACIONES    |");
-        System.out.println("---------------------------------------");
-        System.out.println("");
-        System.out.println("Digite el numero de Habitacion a Modificar ");
-        //Numero de identificador 
-        leer.nextLine();//manejo de errores de lectura
-        String buscaHab = leer.nextLine();
-        for (int i = 0; i < 200; i++){         
-            if ( buscaHab.equals( nombreHabitaciones[i][0] )  ){
-                System.out.println("");
-                System.out.println("Digite el nuevo tipo de Habitacion: ");
-                String tipHab = leer.nextLine();
-
-                System.out.println("");
-                System.out.println("Digite el nuevo nombre del Edificio: ");
-                String edificio = leer.nextLine();
-
-                System.out.println("");
-                System.out.println("Digite el nuevo numero de piso: ");
-                int piso = leer.nextInt();
-
-                System.out.println("");
-                System.out.println("Digite el nuevo monto por noche de la habitacion: ");
-                double monto = leer.nextDouble();
-
-                nombreHabitaciones[i][1] = tipHab;
-                nombreHabitaciones[i][2] = edificio;
-                nombreHabitaciones[i][3] = String.valueOf(piso);
-                nombreHabitaciones[i][4] = String.valueOf(monto); 
-            }
-        }    
-    }     
-            
-        //-- Método para borrar habitaciones
-        public static void borrarHabitaciones(){
-        System.out.println("---------------------------------------");
-        System.out.println("|     ELIMINAACION DE HABITACIONES    |");
-        System.out.println("---------------------------------------");
-        System.out.println("");
-        System.out.println("Digite el identificador para eliminar ");
-        System.out.println("La Habitacion (1-200): ");
-        
-        leer.nextLine();//manejo de errores de lectura
-        String buscaHab = leer.nextLine();
-        for (int i = 0; i < 100; i++){         
-            if ( buscaHab.equals( nombreHabitaciones[i][0] )  ){
-                for (int j = 0; j < 5; j++) {
-                    nombreHabitaciones[i][j] = "";
-                }
-            }
-        }
-    }        
-    
-        //-- Método para Mostrar habitaciones
-    public static void mostrarHabitaciones(){
-        System.out.println("---------------------------------------");
-        System.out.println("|       LISTADO DE HABITACIONES       |");
-        System.out.println("---------------------------------------");
-        System.out.println("");
-        
-        for (int i = 0; i < 200; i++){
-            if ((nombreHabitaciones[i][0] != null) 
-                    && ( !nombreHabitaciones[i][0].equals("")) ){
-                System.out.println("Identificador: " + nombreHabitaciones[i][0]);
-                System.out.println("Tipo: "          + nombreHabitaciones[i][1]);
-                System.out.println("Edificio: "      + nombreHabitaciones[i][2]);
-                System.out.println("Piso: "          + nombreHabitaciones[i][3]);
-                System.out.println("Monto por Noche: "  + nombreHabitaciones[i][4]);
-                System.out.println("");
-                System.out.println("---------------------------------------");
-            }
-        }
-    }    
-    
-    //-- Método para e  l Menú de Habitaciones
     public static void menuHabitaciones(){
         int operacion = 0; //Variable Local/contexto
         do{ // inicio de la repetición
@@ -255,18 +117,18 @@ public class NovaHabitat {
             System.out.println("");
             System.out.print("Opcion: ");
             operacion = leer.nextInt();
-            
+
             switch (operacion){
-                case 1 : insertarHabitaciones();
+                case 1 : misMetodos.insertarHabitacion();
                          break;
-                case 2 : modificarHabitaciones();
+                case 2 : misMetodos.modificarHabitacion();
                          break;
-                case 3 : borrarHabitaciones();
+                case 3 : misMetodos.borrarHabitacion();
                          break;         
-                case 4 : mostrarHabitaciones();
+                case 4 : misMetodos.mostrarHabitaciones();
                          break;
             }
-            
+
         }while (operacion < 5);
     }
     
@@ -338,22 +200,6 @@ public class NovaHabitat {
             } 
         }
         return indice;
-    }
-    
-//-- Método para buscar reservaciones por cliente
-    public static int buscarHabitacion(String id){
-        int resultado = -1;
-        
-        for (int i = 0; i < 200; i++){         
-            if ( id.equals( nombreHabitaciones[i][0] )  ){
-                System.out.println("Tipo Habitacion: "  + nombreHabitaciones[i][1]);
-                System.out.println("---------------------------------------");
-                System.out.println("");
-                resultado = i;
-                break;
-            }
-        }
-        return resultado;
     }    
     
     //-- Método para insertar Reservaciones
@@ -370,18 +216,19 @@ public class NovaHabitat {
         int id = (fila+1) + numFactura; 
         String habitacion = "";
         
-            // encuentraHab guarda el indice de la fila que se devuelve de buscarHabitacion 
-        int encuentraHab = -1; //--   -1 no encontrado, cualquier otro numero = encontrado
+        int encuentraHab = -1;
+        int idHabitacion = 0;
         do{
             System.out.println("");
-            System.out.println("Digite la habitacion: ");
-            habitacion = leer.nextLine();
-            encuentraHab = buscarHabitacion(habitacion);
+            System.out.println("Digite el identificador de la habitacion: ");
+            idHabitacion = leer.nextInt();
+            encuentraHab = misMetodos.buscarHabitacionActivaPorId(idHabitacion);
             if (encuentraHab == -1) {
-                System.out.println("La habitacion digitada no existe ");
+                System.out.println("La habitacion digitada no existe o esta inactiva ");
                 System.out.println("");
             }
         } while ( encuentraHab == -1);
+        habitacion = String.valueOf(idHabitacion);
         
         System.out.println("");
         System.out.println("Digite el cliente: ");
@@ -398,7 +245,7 @@ public class NovaHabitat {
         int dias = fechaOut - fechaIn;
         
         System.out.println("");
-        double monto = dias * Double.parseDouble(nombreHabitaciones[encuentraHab][4]);
+        double monto = dias * misMetodos.obtenerHabitacion(encuentraHab).getCostoPorNoche();
         System.out.println("El monto antes de impuestos de la reserva es: " + monto);
         
         

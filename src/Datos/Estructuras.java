@@ -14,57 +14,52 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.IOException;
 
-/*
-io / IO : = Input. 0 = Output (Input/Ouput) - Lectura / Escritura
-Excepción;
-
 /**
  *     @author Jeffry SM
  */
 
 public class Estructuras {
-    
-    // Estructura Dínamica de Almacenamiento de Ocjeto
-    //stactic contexto; TipoDato  ;Nombre    = nueva   instancia
-    
-     static ArrayList<ObjCliente> listaClientes = new ArrayList<>();
-    
-     static ArrayList<ObjEmpleado> listaEmpleados = new ArrayList<>();
-    
-     static ArrayList<ObjHabitacion> listaHabitaciones = new ArrayList<>();
+
+    // -----------------------------------------------
+    // 1. LISTAS PRINCIPALES PARA ALMACENAR EN MEMORIA
+    //------------------------------------------------
+    static ArrayList<ObjHabitacion> listaHabitaciones = new ArrayList<>();
+    static ArrayList<ObjCliente> listaClientes = new ArrayList<>();
+    static ArrayList<ObjEmpleado> listaEmpleados = new ArrayList<>();
+    static ArrayList<ObjReservacion> listaReservaciones = new ArrayList<>();
      
-     static ArrayList<ObjReservacion> listaReservaciones = new ArrayList<>();
+    // Constructor
      
-     // Constructor
-     
-     public Estructuras() {
+    public Estructuras() {
           
-     }
+    }
      
-     
-     // ------- Métodos para Gestionar con Archivos ------------
-                               //Nombre del archivo, simple, sin extensión
-     public void crearArchivo(String nombre) {
+    // ------------------------------------------
+    // 2. MÉTODOS PARA GESTIONAR CON ARCHIVOS
+    // ------------------------------------------ 
+    
+    // Método para crear un archivo físico en el disco
+    public void crearArchivo(String nombre) {
          
-         File miArchivo = new File(nombre + ".txt");
+        File miArchivo = new File(nombre + ".txt");
          
-         try { //--Intento de hacer una operación
-             if ( miArchivo.createNewFile() ) {
-                  System.out.println("--------------------");
-                  System.out.println("   Archivo Creado   ");
-                  System.out.println("--------------------");
-             } else {
-                  System.out.println("-------------------");
-                  System.out.println(" Archivo ya Existe ");
-                  System.out.println("-------------------");
-             }
-         } catch ( IOException ex ) { //-- Captura de errores si falla el intento
-             JOptionPane.showMessageDialog( null,"Error  al guardar el archivo", 
-                                             "Atención", JOptionPane.ERROR_MESSAGE );
-             System.out.println( ex.toString() ) ;
-         }
+        try { //--Intento de hacer una operación
+            if ( miArchivo.createNewFile() ) {
+                 System.out.println("--------------------");
+                 System.out.println("   Archivo Creado   ");
+                 System.out.println("--------------------");
+            } else {
+                 System.out.println("-------------------");
+                 System.out.println(" Archivo ya Existe ");
+                 System.out.println("-------------------");
+            }
+        } catch ( IOException ex ) { //-- Captura de errores si falla el intento
+            JOptionPane.showMessageDialog( null,"Error  al guardar el archivo", 
+                                            "Atención", JOptionPane.ERROR_MESSAGE );
+            System.out.println( ex.toString() ) ;
+        }
          
-     }
+    }
      
      // Método para limpiar archivos
      public void limpiarArchivo(String nombre) {
@@ -79,8 +74,103 @@ public class Estructuras {
          }
      }
      
+     // ------------------------------------------
+     // 3. MÓDULO DE Habitaciones
+     // ------------------------------------------
      
-     // Método para escribir el archivo de Cliente
+    // Método para escribir el archivo de Habitaciones
+    public void escribeArchivoHabitaciones() {
+        //-- Antes de escribir limpiamos el archivo
+        System.out.println("------------------------------------");
+        System.out.println("Limpiamos el Archivo de Habitaciones");
+        limpiarArchivo("Habitaciones");
+
+        try {
+            FileWriter escritor = new FileWriter("Habitaciones.txt", true);
+            String linea;
+            for (int i = 0; i < listaHabitaciones.size(); i++) {
+                ObjHabitacion miHabitacion = listaHabitaciones.get(i);
+
+                linea = String.valueOf(miHabitacion.getId())           + ";" +
+                        miHabitacion.getTipoHabitacion()                + ";" +
+                        miHabitacion.getEdificio()                      + ";" +
+                        String.valueOf(miHabitacion.getPiso())          + ";" +
+                        String.valueOf(miHabitacion.getCostoPorNoche()) + ";" +
+                        String.valueOf(miHabitacion.getEstado())        + ";\n";
+                System.out.println("Escribiendo la linea: " + linea);
+                escritor.write(linea);
+            }
+
+            escritor.write(10);
+            escritor.close();
+
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "Error  al limpiar el archivo",
+                    "Atención", JOptionPane.ERROR_MESSAGE);
+            System.out.println(ex.toString());
+        }
+        System.out.println("------------------------------------");
+    }
+    
+    //--Métodos para leer el archivo de Habitaciones (Llenar la lista Habitaciones)
+    public void leerArchivoHabitaciones() {
+
+        try {
+            FileReader miArchivo = new FileReader("Habitaciones.txt");
+            BufferedReader lector = new BufferedReader(miArchivo);
+
+            String linea = lector.readLine();
+            String segmento[];
+
+            while (linea != null) {
+                segmento = linea.split(";");
+                if (!segmento[0].equals("")) {
+                    ObjHabitacion miHabitacion = new ObjHabitacion();
+                    miHabitacion.setId(Integer.parseInt(segmento[0]));
+                    miHabitacion.setTipoHabitacion(segmento[1]);
+                    miHabitacion.setEdificio(segmento[2]);
+                    miHabitacion.setPiso(Integer.parseInt(segmento[3]));
+                    miHabitacion.setCostoPorNoche(Double.parseDouble(segmento[4]));
+                    miHabitacion.setEstado(Integer.parseInt(segmento[5]));
+
+                    listaHabitaciones.add(miHabitacion);
+                }
+                linea = lector.readLine();
+            }
+
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "Error  al leer el archivo",
+                    "Atención", JOptionPane.ERROR_MESSAGE);
+            System.out.println(ex.toString());
+
+        }
+    }
+    
+    // ------------ Métodos de Trabajo (Habitaciones) ------------
+    
+    // Insertar habitacion en la lista
+     public void agregarHabitacion(ObjHabitacion miHabitacion) {
+       listaHabitaciones.add(miHabitacion);  
+     }
+     
+     public void editarHabitacion(int indice, ObjHabitacion miHabitacion) {
+        listaHabitaciones.set(indice, miHabitacion);
+     }
+     
+     public void quitarHabitacion(int indice) {
+         listaHabitaciones.remove(indice);
+     }
+     
+     public ArrayList<ObjHabitacion> listarHabitaciones() {
+        return  new ArrayList<>(listaHabitaciones);
+     }  
+     
+    // ------------------------------------------
+    // 4. MÓDULO DE CLIENTES
+    // ------------------------------------------
+     
+     // ------------ Persistencia en Archivo ------------
+     
      public  void escribeArchivoClientes() {
          //-- Antes de escribir limpiamos el archivo
          System.out.println("------------------------------------");
@@ -122,8 +212,6 @@ public class Estructuras {
          }
         System.out.println("------------------------------------");
      }
-     
-     
      
      //--Métodos para leer el archivo de Clientes (Llenar la lista Clientes)
      public void leerArchivoClientes() {
@@ -167,30 +255,11 @@ public class Estructuras {
              System.out.println( ex.toString() ) ;
          
       }
+         
      }
      
 
-     // ------------ Métodos de Trabajo ----------------
-     
-     // Insertar habitacion en la lista
-     public void agregarHabitacion(ObjHabitacion miHabitacion) {
-       listaHabitaciones.add(miHabitacion);  
-     }
-     
-     public void editarHabitacion(int indice, ObjHabitacion miHabitacion) {
-        listaHabitaciones.set(indice, miHabitacion);
-     }
-     
-     public void quitarHabitacion(int indice) {
-         listaHabitaciones.remove(indice);
-     }
-     
-     public ArrayList<ObjHabitacion> listarHabitaciones() {
-        return  new ArrayList<>(listaHabitaciones);
-     }  
-     
-     
-     
+     // ------------ Métodos de Trabajo (Clientes) ----------------
      
      // Insertar clientes en la lista
      public void agregarCliente(ObjCliente miCliente) {
@@ -211,6 +280,11 @@ public class Estructuras {
      public ArrayList<ObjCliente> listarClientes() {
         return  new ArrayList<>(listaClientes);
      }
+     
+     
+     // ------------------------------------------
+    // 5. MÓDULO DE EMPLEADOS
+    // ------------------------------------------
      
      
      
