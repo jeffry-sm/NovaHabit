@@ -13,6 +13,8 @@ import java.io.FileWriter;     //  Writer = Escritor
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  *     @author Jeffry SM
@@ -112,8 +114,8 @@ public class Estructuras {
         System.out.println("------------------------------------");
     }
     
-    //--Métodos para leer el archivo de Habitaciones (Llenar la lista Habitaciones)
-    public void leerArchivoHabitaciones() {
+     //--Métodos para leer el archivo de Habitaciones (Llenar la lista Habitaciones)
+     public void leerArchivoHabitaciones() {
 
         try {
             FileReader miArchivo = new FileReader("Habitaciones.txt");
@@ -146,9 +148,9 @@ public class Estructuras {
         }
     }
     
-    // ------------ Métodos de Trabajo (Habitaciones) ------------
+     // ------------ Métodos de Trabajo (Habitaciones) ------------
     
-    // Insertar habitacion en la lista
+     // Insertar habitacion en la lista
      public void agregarHabitacion(ObjHabitacion miHabitacion) {
        listaHabitaciones.add(miHabitacion);  
      }
@@ -165,9 +167,9 @@ public class Estructuras {
         return  new ArrayList<>(listaHabitaciones);
      }  
      
-    // ------------------------------------------
-    // 4. MÓDULO DE CLIENTES
-    // ------------------------------------------
+     // ------------------------------------------
+     // 4. MÓDULO DE CLIENTES
+     // ------------------------------------------
      
      // ------------ Persistencia en Archivo ------------
      
@@ -283,13 +285,13 @@ public class Estructuras {
      
      
      // ------------------------------------------
-    // 5. MÓDULO DE EMPLEADOS
-    // ------------------------------------------
+     // 5. MÓDULO DE EMPLEADOS
+     // ------------------------------------------
      
      
      
      
-    // Insertar empleado en la lista
+     // Insertar empleado en la lista
      public void agregarEmpleado(ObjEmpleado miEmpleado) {
        listaEmpleados.add(miEmpleado);  
      }
@@ -308,9 +310,94 @@ public class Estructuras {
      } 
      
      
+     // ------------------------------------------
+     // 6. MÓDULO DE RESERVACIONES
+     // ------------------------------------------
      
+     // ----------- Persistencia en Archivo ------------
+     
+     public void escribeArchivoReservaciones() {
+        System.out.println("------------------------------------");
+        System.out.println("Limpiamos el Archivo de Reservaciones");
+        limpiarArchivo("Reservaciones");
+        
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        
+        try {
+            FileWriter escritor = new FileWriter("Reservaciones.txt", true);
+            String linea;
+            
+            for (int i = 0; i < listaReservaciones.size(); i++) {
+                ObjReservacion miReservacion  = listaReservaciones.get(i);
+                
+                linea = String.valueOf(miReservacion.getId())       + ";" +
+                         miReservacion.getIdHabitacion()            + ";" +
+                         miReservacion.getCedCliente()              + ";" +
+                         formato.format(miReservacion.getIngreso()) + ";" +
+                         formato.format(miReservacion.getSalida())  + ";" +
+                         String.valueOf(miReservacion.getMonto())   + ";" +
+                         String.valueOf(miReservacion.getEstado())  + ";\n" ;
+                 System.out.println("Escribiendo la linea: " + linea);
+                 escritor.write(linea);
+            }  
+                 escritor.write(10);
+                 escritor.close();
+                 
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "Error al escribir el archivo de Reservaciones", 
+                                          "Atención", JOptionPane.ERROR_MESSAGE);
+            System.out.println(ex.toString());
+        }
+        System.out.println("------------------------------------");
+        
+     }
+     
+     public void leerArchivoReservaciones() {
+         
+         listaReservaciones.clear();
+         
+         SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+         
+         try {
+             FileReader miArchivo = new FileReader ("Reservaciones.txt");
+             BufferedReader lector = new BufferedReader (miArchivo);
+             
+             String linea = lector.readLine();
+             String segmento[];
+             
+             while (linea != null) {
+                 if (!linea.trim().isEmpty()) {
+                     segmento = linea.split(";");
+                     if (segmento.length >= 7 && !segmento[0].equals("")) {
+                         try {
+                              ObjReservacion miReservacion = new ObjReservacion();
+                     
+                              miReservacion.setId(Integer.parseInt(segmento[0]));
+                              miReservacion.setIdHabitacion(Integer.parseInt(segmento[1]));
+                              miReservacion.setCedCliente(segmento[2]);
+                              miReservacion.setIngreso(formato.parse(segmento[3]));
+                              miReservacion.setSalida(formato.parse(segmento[4]));
+                              miReservacion.setMonto(Double.parseDouble(segmento[5]));
+                              miReservacion.setEstado(Integer.parseInt(segmento[6]));
+                              listaReservaciones.add(miReservacion);
+                         } catch (ParseException ex) {
+                         System.out.print("Error al leer fecha: " + ex.toString());
+                     }
+                 }
+                     
+                } 
+                 linea = lector.readLine();
+             }
+             lector.close();
+             
+         } catch (IOException ex) {
+             JOptionPane.showMessageDialog(null, "Error al leer el archivo de Reservaciones", 
+                                           "Atención", JOptionPane.ERROR_MESSAGE);
+             System.out.println(ex.toString());
+         }
+         
+     }
  
-     
     // Insertar reservacion en la lista
      public void agregarReservacion(ObjReservacion miReservacion) {
        listaReservaciones.add(miReservacion);  

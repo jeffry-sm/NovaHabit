@@ -190,178 +190,7 @@ public class NovaHabitat {
         }while (operacion < 5);
     }
     
-    //--Método para obtener la siguiente Reservación
-    public static int siguienteRes(){
-        int indice = -1;
-        for (int i = 0; i < 100; i++){
-            if (reservacion[i][0] == ""){
-                indice = i;
-                break;
-            } 
-        }
-        return indice;
-    }    
     
-    //-- Método para insertar Reservaciones
-    public static void insertarReservaciones(){
-        //--Matriz = Array de 2 dimensinoes
-        System.out.println("---------------------------------------");
-        System.out.println("|      REGISTRO DE RESERVACIONES      |");
-        System.out.println("---------------------------------------");
-        System.out.println("");
-        int fila = siguienteRes();
-        leer.nextLine(); //Evitar error lectura
-        
-        // identificador o numero de factura correspondiente
-        int id = (fila+1) + numFactura; 
-        String habitacion = "";
-        
-        int encuentraHab = -1;
-        int idHabitacion = 0;
-        do{
-            System.out.println("");
-            System.out.println("Digite el identificador de la habitacion: ");
-            idHabitacion = leer.nextInt();
-            encuentraHab = misMetodos.buscarHabitacionActivaPorId(idHabitacion);
-            if (encuentraHab == -1) {
-                System.out.println("La habitacion digitada no existe o esta inactiva ");
-                System.out.println("");
-            }
-        } while ( encuentraHab == -1);
-        habitacion = String.valueOf(idHabitacion);
-        
-        System.out.println("");
-        System.out.println("Digite el cliente: ");
-        String cliente = leer.nextLine();
-        
-        System.out.println("");
-        System.out.println("Digite la fecha de entrada (aaaammdd): ");
-        int fechaIn = leer.nextInt();
-        
-        System.out.println("");
-        System.out.println("Digite la fecha de salida (aaaammdd): ");
-        int fechaOut = leer.nextInt(); 
-        
-        int dias = fechaOut - fechaIn;
-        
-        System.out.println("");
-        double monto = dias * misMetodos.obtenerHabitacion(encuentraHab).getCostoPorNoche();
-        System.out.println("El monto antes de impuestos de la reserva es: " + monto);
-        
-        
-        reservacion[fila][0] = String.valueOf(id);
-        reservacion[fila][1] = habitacion;
-        reservacion[fila][2] = cliente;
-        reservacion[fila][3] = String.valueOf(fechaIn);
-        reservacion[fila][4] = String.valueOf(fechaOut);
-        reservacion[fila][5] = String.valueOf(monto);
-    }
-    
-    //-- Método para mostrar las reservaciones
-    public static void mostrarReservaciones(){
-        System.out.println("---------------------------------------");
-        System.out.println("|       LISTADO DE RESERVACIONES      |");
-        System.out.println("---------------------------------------");
-        System.out.println("");
-        for (int i = 0; i < 100; i++){
-            if (reservacion[i][0] != ""){
-                System.out.println("Numero: "        + reservacion[i][0]);
-                System.out.println("Habitacion: "    + reservacion[i][1]);
-                System.out.println("Cliente: "       + reservacion[i][2]);
-                System.out.println("Fecha Ingreso: " + reservacion[i][3]);
-                System.out.println("Fecha Salida: "  + reservacion[i][4]);
-                System.out.println("Monto: "         + reservacion[i][5]);
-                double impuesto = Double.parseDouble(reservacion[i][5]) * (0.13);
-                System.out.println("impuesto : " + impuesto);
-                double total = Double.parseDouble(reservacion[i][5]) + impuesto;
-                System.out.println("Total a Pagar : " + total);
-                System.out.println("---------------------------------------");
-                System.out.println("");
-            }
-        }
-    }
-    
-    //-- Método para buscar reservaciones por cliente
-    public static void buscarReservacion(){
-        System.out.println("---------------------------------------");
-        System.out.println("|      BUSQUEDA DE RESERVACIONES      |");
-        System.out.println("---------------------------------------");
-        System.out.println("");
-        System.out.println("Digite el nombre del cliente a buscar: ");
-        leer.nextLine();//manejo de errores de lectura
-        String buscaCli = leer.nextLine();
-        for (int i = 0; i < 100; i++){         
-            if ( buscaCli.equals( reservacion[i][2] )  ){
-                System.out.println("Numero: "        + reservacion[i][0]);
-                System.out.println("Habitacion: "    + reservacion[i][1]);
-                System.out.println("Cliente: "       + reservacion[i][2]);
-                System.out.println("Fecha Ingreso: " + reservacion[i][3]);
-                System.out.println("Fecha Salida: "  + reservacion[i][4]);
-                System.out.println("Monto: "         + reservacion[i][5]);
-                System.out.println("---------------------------------------");
-                System.out.println("");
-            }
-        }
-    }
-    
-    //-- Método para borrar reservaciones por cliente
-    public static void borrarReservacion(){
-        System.out.println("---------------------------------------");
-        System.out.println("|       BORRADO DE RESERVACIONES      |");
-        System.out.println("---------------------------------------");
-        System.out.println("");
-        System.out.println("Digite el numero de factura a borrar ");
-        leer.nextLine();//manejo de errores de lectura
-        String buscaFact = leer.nextLine();
-        for (int i = 0; i < 100; i++){         
-            if ( buscaFact.equals( reservacion[i][0] )  ){
-                for (int j = 0; j < 6; j++) {
-                    reservacion[i][j] = "";
-                }
-            }
-        }
-    }    
-    
-//-- Método para Modificar reservaciones por cliente
-    public static void modificaReservacion(){
-        System.out.println("---------------------------------------");
-        System.out.println("|       EDICION DE RESERVACIONES      |");
-        System.out.println("---------------------------------------");
-        System.out.println("");
-        System.out.println("Digite el numero de factura a Modificar ");
-        //Numero de factura es nuestro identificador
-        leer.nextLine();//manejo de errores de lectura
-        String buscaFact = leer.nextLine();
-        for (int i = 0; i < 100; i++){         
-            if ( buscaFact.equals( reservacion[i][0] )  ){
-                System.out.println("");
-                System.out.println("Digite la habitacion: ");
-                String habitacion = leer.nextLine();
-
-                System.out.println("");
-                System.out.println("Digite el cliente: ");
-                String cliente = leer.nextLine();
-
-                System.out.println("");
-                System.out.println("Digite la fecha de entrada (dd-mm-aaaa): ");
-                String fechaIn = leer.nextLine();
-
-                System.out.println("");
-                System.out.println("Digite la fecha de salida (dd-mm-aaaa): ");
-                String fechaOut = leer.nextLine(); 
-
-                System.out.println("");
-                System.out.println("Digite el monto de la reserva: ");
-                double monto = leer.nextDouble();
-
-                reservacion[i][1] = habitacion;
-                reservacion[i][2] = cliente;
-                reservacion[i][3] = fechaIn;
-                reservacion[i][4] = fechaOut;
-                reservacion[i][5] = String.valueOf(monto);
-            }
-        }
-    }     
     
     //-- Método para el Menú de Reservaciones
     public static void menuReservaciones(){
@@ -385,15 +214,15 @@ public class NovaHabitat {
             operacion = leer.nextInt();
             
             switch (operacion) {
-                case 1: insertarReservaciones();
+                case 1: misMetodos.insertarReservacion();
                         break;
-                case 2: modificaReservacion();
+                case 2: misMetodos.modificarReservacion();
                         break;
-                case 3: borrarReservacion();
+                case 3: misMetodos.borrarReservacion();
                         break;        
-                case 4: mostrarReservaciones();
+                case 4: misMetodos.mostrarReservaciones();
                         break;
-                case 5: buscarReservacion();
+                case 5: misMetodos.buscarReservacion();
                         break;
             }
         }while (operacion < 6);
