@@ -6,8 +6,12 @@ package Logica;
 
 import Datos.ObjHabitacion;
 import Datos.ObjCliente;
+import Datos.ObjReservacion;
 import Datos.Estructuras;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
 
@@ -59,6 +63,21 @@ public class Metodos {
             }
         }
         return resultado;
+    }
+    
+    public int buscarHabitacionActivaPorId(int id){
+        ArrayList<ObjHabitacion> misHabitaciones = Almacen.listarHabitaciones();
+        for (int i = 0; i < misHabitaciones.size(); i++){
+            if (misHabitaciones.get(i).getId() == id 
+                    && misHabitaciones.get(i).getEstado() == 1){
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    public ObjHabitacion obtenerHabitacion(int indice){
+        return Almacen.listarHabitaciones().get(indice);
     }
     
     public int buscarHabitacion(){
@@ -180,25 +199,24 @@ public class Metodos {
         }
     }
     
-    public int buscarHabitacionActivaPorId(int id){
-        ArrayList<ObjHabitacion> misHabitaciones = Almacen.listarHabitaciones();
-        for (int i = 0; i < misHabitaciones.size(); i++){
-            if (misHabitaciones.get(i).getId() == id && misHabitaciones.get(i).getEstado() == 1){
+    //--------------------------------------------
+    // Módulo de Clientes
+    //--------------------------------------------
+    
+    public int buscarClienteActivoPorCedula(String cedula){
+        ArrayList<ObjCliente> misClientes = Almacen.listarClientes();
+        for (int i = 0; i < misClientes.size(); i++){
+            if (misClientes.get(i).getCedula().equals(cedula) 
+                    && misClientes.get(i).getEstado() == 1){
                 return i;
             }
         }
         return -1;
     }
     
-    public ObjHabitacion obtenerHabitacion(int indice){
-        return Almacen.listarHabitaciones().get(indice);
+    public ObjCliente obtenerCliente(int indice){
+        return Almacen.listarClientes().get(indice);
     }
-    
-    
-    
-    //--------------------------------------------
-    // Módulo de Clientes
-    //--------------------------------------------
     
     public int buscarCliente() {
         System.out.println("---------------------------------------");
@@ -353,5 +371,305 @@ public class Metodos {
             System.out.println("---------------------------------------");
         }
     }
+    
+    //--------------------------------------------
+    // Módulo de Reservaciones
+    //--------------------------------------------
+    
+    //--Método para obtener la siguiente Reservación
+    public int siguienteReservacion() {
+        int resultado = 1;
+        ArrayList<ObjReservacion> misReservaciones = Almacen.listarReservaciones();
+        for (int i = 0; i < misReservaciones.size(); i++) {
+            if (resultado <= misReservaciones.get(i).getId()) {
+                resultado = misReservaciones.get(i).getId() + 1;
+            }
+        }
+        return resultado;
+    }  
+    
+    public int buscarReservacion() {
+        System.out.println("---------------------------------------");
+        System.out.println("|        BUSCAR  RESERVACION          |");
+        System.out.println("---------------------------------------");
+        System.out.println(""); 
+        System.out.println("Digite el id de la reservacion: ");
+        //leer.nextLine();
+        int id = leer.nextInt();
+        int indice    = -1;
+        
 
+        ArrayList<ObjReservacion> misReservaciones = Almacen.listarReservaciones();
+ 
+        for(int i = 0; i < misReservaciones.size();i++){
+            ObjReservacion reservacion = misReservaciones.get(i);
+            if (reservacion.getId() == id){
+                indice = i;
+                break;
+            }
+            
+        }
+        return indice;
+    }
+    
+    
+    //-- Método para insertar Reservaciones
+    public void insertarReservacion() {
+        
+        ObjReservacion nuevaReservacion = new ObjReservacion();
+        
+        System.out.println("---------------------------------------");
+        System.out.println("|      REGISTRO DE RESERVACIONES      |");
+        System.out.println("---------------------------------------");
+        System.out.println("");
+        
+        int id = siguienteReservacion();
+        System.out.println("Identificador de la reservacion " + id);
+        nuevaReservacion.setId(id);
+        leer.nextLine();
+        
+        // Id de la habitacion
+        int idHabitacion;
+        int indiceHabitacion;
+        do {
+            System.out.println("");
+            System.out.println("Digite el id de la habitacion: ");
+            idHabitacion = leer.nextInt();
+            indiceHabitacion = buscarHabitacionActivaPorId(idHabitacion);
+            if (indiceHabitacion == -1) {
+                System.out.println("La habitacion digitada no existe o esta inactiva.");
+                System.out.println(""); 
+            }
+        } while (indiceHabitacion == -1);
+        nuevaReservacion.setIdHabitacion(idHabitacion);
+        leer.nextLine();
+
+        // Cedula del cliente
+        String cedula;
+        int indiceCliente;
+        do {
+            System.out.println("");
+            System.out.println("Digite la cedula del cliente: ");
+            cedula = leer.nextLine();
+            indiceCliente = buscarClienteActivoPorCedula(cedula);
+            if (indiceCliente == -1) {
+                System.out.println("El cliente digitado no existe o esta inactivo");
+                System.out.println("");
+            }
+        } while (indiceCliente == -1);
+        nuevaReservacion.setCedCliente(cedula);
+        
+        // Fecha de ingreso
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        formato.setLenient(false);
+        Date fechaIngreso = null;
+        do {
+            System.out.println("");
+            System.out.println("Digite la fecha (dd/MM/yyyy): ");
+            String textoFecha = leer.nextLine();
+            try {
+                fechaIngreso = formato.parse(textoFecha);
+            } catch (ParseException ex) {
+                System.out.println("Fecha invalida, intente de nuevo.");
+            }
+        } while (fechaIngreso == null);
+        nuevaReservacion.setIngreso(fechaIngreso);   
+        
+        // Fecha de salida
+        Date fechaSalida = null;
+        do {
+            System.out.println("");
+            System.out.println("Digite la fecha (dd/MM/yyyy): ");
+            String textoFecha = leer.nextLine();
+            try {
+                fechaSalida = formato.parse(textoFecha);
+                if (fechaSalida.before(fechaIngreso)) {
+                    System.out.println("La fecha de salida no puede ser anterior a la fecha de ingreso.");
+                    fechaSalida = null;
+                }
+            } catch (ParseException ex) {
+                System.out.println("Fecha invalida, intente de nuevo.");
+            }
+        } while (fechaSalida == null);
+        
+        // Calculo del monto
+        ObjHabitacion habitacion = obtenerHabitacion(indiceHabitacion);  // Obtener la habitación seleccionada
+        double costoPorNoche = habitacion.getCostoPorNoche();  // Costo por noche
+        // Calcular cantidad de noches
+        long diferencia = fechaSalida.getTime() - fechaIngreso.getTime();
+        long noches = diferencia / (1000 * 60 * 60 * 24);
+        double monto = noches * costoPorNoche;  // Calcular monto total
+        nuevaReservacion.setMonto(monto);
+        System.out.println("");
+        System.out.println("Cantidad de noches: " + noches);
+        System.out.println("Costo por noche: " + costoPorNoche);
+        System.out.println("Monto total de la reservacion: " + monto);
+        
+        nuevaReservacion.setEstado(1);
+        
+        Almacen.agregarReservacion(nuevaReservacion);
+        Almacen.escribeArchivoReservaciones();
+        
+        System.out.println("");
+        System.out.println("Reservacion registrada correctamente.");
+        System.out.println("Identificador de la reservacion: " + id);
+    
+    }   
+    
+    // Método para modificar una Reservación existente
+    public void modificarReservacion() {
+        int indice = buscarReservacion();
+        if (indice == -1) {
+            System.out.println("");
+            System.out.println("No se encontro la reservacion.");
+            System.out.println("");
+        } else {
+            ArrayList<ObjReservacion> misReservaciones = Almacen.listarReservaciones();
+            ObjReservacion reservacion = misReservaciones.get(indice);
+            System.out.println("");
+            System.out.println("Reservacion encontrada:");
+            System.out.println("Habitacion: "   + reservacion.getIdHabitacion());
+            System.out.println("Cliente: "      + reservacion.getCedCliente());
+            System.out.println("Monto actual: " + reservacion.getMonto());
+            System.out.println("");
+            
+            // Id de la habitacion
+            int idHabitacion;
+            int indiceHabitacion;
+            do {
+                System.out.println("Digite el nuevo id de la habitacion: ");
+                idHabitacion = leer.nextInt();
+                indiceHabitacion = buscarHabitacionActivaPorId(idHabitacion);
+                if (indiceHabitacion == -1) {
+                    System.out.println("La habitacion digitada no existe o esta inactiva.");
+                    System.out.println("");
+                }
+            } while (indiceHabitacion == -1);
+            reservacion.setIdHabitacion(idHabitacion);
+            leer.nextLine();
+            
+            // Cedula del clinete
+            String cedula;
+            int indiceCliente;
+            do {
+                System.out.println("");
+                System.out.println("Digite la nueva cedula del cliente: ");
+                cedula = leer.nextLine();
+                indiceCliente = buscarClienteActivoPorCedula(cedula);
+                if (indiceCliente == -1) {
+                    System.out.println("El cliente digitado no existe o esta inactivo.");
+                    System.out.println("");
+                }
+            } while (indiceCliente == -1);
+            reservacion.setCedCliente(cedula);
+            
+            // Fecha de ingreso
+            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+            formato.setLenient(false);
+            Date fechaIngreso = null;
+            do {
+                System.out.println("");
+                System.out.println("Digite la nueva fecha de ingreso (dd/MM/yyyy): ");
+                String textoFecha = leer.nextLine();
+                try {
+                    fechaIngreso = formato.parse(textoFecha);
+                } catch (ParseException ex) {
+                    System.out.println("Fecha invalida, intente de nuevo.");
+                }
+            } while (fechaIngreso == null);
+            reservacion.setIngreso(fechaIngreso);
+
+            // Fecha de salida
+            Date fechaSalida = null;
+            do {
+                System.out.println("");
+                System.out.println("Digite la nueva fecha de salida (dd/MM/yyyy): ");
+                String textoFecha = leer.nextLine();
+                try {
+                    fechaSalida = formato.parse(textoFecha);
+                    if (fechaSalida.before(fechaIngreso)) {
+                        System.out.println("La fecha de salida no puede ser anterior a la fecha de ingreso.");
+                        fechaSalida = null;
+                    }
+                } catch (ParseException ex) {
+                    System.out.println("Fecha invalida, intente de nuevo.");
+                }
+            } while (fechaSalida == null);
+            reservacion.setSalida(fechaSalida);
+            
+            // Recalculo del monto con la habitacion y fechas actualizadas
+            ObjHabitacion habitacion = obtenerHabitacion(indiceHabitacion);
+            double costoPorNoche = habitacion.getCostoPorNoche();
+            long diferencia = fechaSalida.getTime() - fechaIngreso.getTime();
+            long noches = diferencia / (1000 * 60 * 60 * 24);
+            double monto = noches * costoPorNoche;
+            reservacion.setMonto(monto);
+            System.out.println("");
+            System.out.println("Cantidad de noches: "  + noches);
+            System.out.println("Costo por noche: "     + costoPorNoche);
+            System.out.println("Nuevo monto total: "   + monto);
+            
+            Almacen.editarReservacion(indice, reservacion);
+            Almacen.escribeArchivoReservaciones();
+            
+            System.out.println("");
+            System.out.println("Reservacion modificada correctamente.");
+            System.out.println("");
+          }    
+    }
+    
+    //-- Método para borrar (desactivar) una Reservación existente
+    public void borrarReservacion() {
+        int indice = buscarReservacion();
+        if (indice == -1) {
+            System.out.println("");
+            System.out.println("No se encontro la reservacion.");
+            System.out.println("");
+        } else {
+            ArrayList<ObjReservacion> misReservaciones = Almacen.listarReservaciones();
+            ObjReservacion reservacion = misReservaciones.get(indice);
+
+            System.out.println("");
+            System.out.println("Reservacion encontrada:");
+            System.out.println("Habitacion: " + reservacion.getIdHabitacion());
+            System.out.println("Cliente: "    + reservacion.getCedCliente());
+            System.out.println("Monto: "      + reservacion.getMonto());
+            System.out.println("");
+
+            reservacion.setEstado(0);
+
+            Almacen.editarReservacion(indice, reservacion);
+            Almacen.escribeArchivoReservaciones();
+
+            System.out.println("Reservacion eliminada correctamente.");
+            System.out.println("");
+        }
+    }
+    
+    //-- Método para mostrar el listado de Reservaciones activas
+    public void mostrarReservaciones() {
+        System.out.println("---------------------------------------");
+        System.out.println("|      LISTADO DE RESERVACIONES       |");
+        System.out.println("---------------------------------------");
+        System.out.println("");
+
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        ArrayList<ObjReservacion> misReservaciones = Almacen.listarReservaciones();
+
+        for (int i = 0; i < misReservaciones.size(); i++) {
+            ObjReservacion reservacion = misReservaciones.get(i);
+            if (reservacion.getEstado() == 1) {
+                System.out.println("Identificador: " + reservacion.getId());
+                System.out.println("Habitacion: "    + reservacion.getIdHabitacion());
+                System.out.println("Cliente: "       + reservacion.getCedCliente());
+                System.out.println("Ingreso: "       + formato.format(reservacion.getIngreso()));
+                System.out.println("Salida: "        + formato.format(reservacion.getSalida()));
+                System.out.println("Monto: "         + reservacion.getMonto());
+                System.out.println("");
+                System.out.println("---------------------------------------");
+            }
+        }
+    }
+
+    
 }
