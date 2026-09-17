@@ -6,6 +6,7 @@ package Logica;
 
 import Datos.ObjHabitacion;
 import Datos.ObjCliente;
+import Datos.ObjEmpleado;
 import Datos.ObjReservacion;
 import Datos.Estructuras;
 import java.text.ParseException;
@@ -39,7 +40,7 @@ public class Metodos {
         Almacen.crearArchivo("Habitaciones");
         Almacen.crearArchivo("Clientes");
         Almacen.crearArchivo("Empleados");
-        Almacen.crearArchivo("Reservas");
+        Almacen.crearArchivo("Reservaciones");
         
     }
     
@@ -47,6 +48,8 @@ public class Metodos {
         // Aqui vamos a poner los métodos que cargan en cada lista
         Almacen.leerArchivoHabitaciones();
         Almacen.leerArchivoClientes();
+        Almacen.leerArchivoEmpleados();
+        Almacen.leerArchivoReservaciones();
        
     }
     
@@ -253,8 +256,8 @@ public class Metodos {
         System.out.println("---------------------------------------");
         System.out.println("");
         
-        System.out.println("Digite el Identificador de cliente: ");
-        int id = leer.nextInt();
+        int id = siguienteEmpleado();
+        System.out.println("Identificador: " + id);
         nuevoCliente.setId(id);
         
         leer.nextLine();
@@ -369,6 +372,192 @@ public class Metodos {
             System.out.println("Telefono: " + cliente.getTelefono() );
             System.out.println("");
             System.out.println("---------------------------------------");
+        }
+    }
+    
+    //--------------------------------------------
+    // Módulo de Empleados
+    //--------------------------------------------
+    
+    public int siguienteEmpleado() {
+        int resultado = 1;
+        ArrayList<ObjEmpleado> misEmpleados = Almacen.listarEmpleados();
+        for (int i = 0; i < misEmpleados.size(); i++) {
+            if (resultado <= misEmpleados.get(i).getId()) {
+                resultado = misEmpleados.get(i).getId() + 1;
+            }
+        }
+        return resultado;
+    }
+    
+    public int buscarEmpleado() {
+        System.out.println("---------------------------------------");
+        System.out.println("|          BUSCAR  EMPLEADO           |");
+        System.out.println("---------------------------------------");
+        System.out.println("");
+        System.out.println("Digite el identificador del empleado: ");
+        int id = leer.nextInt();
+        leer.nextLine();
+        int indice = -1;
+
+        ArrayList<ObjEmpleado> misEmpleados = Almacen.listarEmpleados();
+        for (int i = 0; i < misEmpleados.size(); i++) {
+            ObjEmpleado empleado = misEmpleados.get(i);
+            if (empleado.getId() == id) {
+                indice = i;
+                break;
+            }
+        }
+        return indice;
+    }
+    
+    public void insertarEmpleado() {
+        ObjEmpleado nuevoEmpleado = new ObjEmpleado();
+        System.out.println("---------------------------------------");
+        System.out.println("|         REGISTRAR EMPLEADO          |");
+        System.out.println("---------------------------------------");
+        System.out.println("");
+
+        int id = siguienteEmpleado();
+        System.out.println("Identificador: " + id);
+        nuevoEmpleado.setId(id);
+
+        System.out.println("Digite la Cedula: ");
+        String cedula = leer.nextLine();
+        nuevoEmpleado.setCedula(cedula);
+
+        System.out.println("Digite el Nombre: ");
+        String nombre = leer.nextLine();
+        nuevoEmpleado.setNombre(nombre);
+
+        System.out.println("Digite el Primer Apellido: ");
+        String apellido1 = leer.nextLine();
+        nuevoEmpleado.setApellido1(apellido1);
+
+        System.out.println("Digite el Segundo Apellido: ");
+        String apellido2 = leer.nextLine();
+        nuevoEmpleado.setApellido2(apellido2);
+
+        System.out.println("Digite el Telefono: ");
+        String telefono = leer.nextLine();
+        nuevoEmpleado.setTelefono(telefono);
+
+        System.out.println("Digite el Correo: ");
+        String correo = leer.nextLine();
+        nuevoEmpleado.setCorreo(correo);
+
+        System.out.println("Digite el Salario: ");
+        double salario = leer.nextDouble();
+        nuevoEmpleado.setSalario(salario);
+        leer.nextLine();
+
+        nuevoEmpleado.setEstado(1);
+
+        Almacen.agregarEmpleado(nuevoEmpleado);
+        Almacen.escribeArchivoEmpleados();
+
+        System.out.println("");
+        System.out.println("Empleado registrado correctamente (ID: " + id + ").");
+        System.out.println("");
+    }
+    
+    public void modificarEmpleado() {
+        int indice = buscarEmpleado();
+        if (indice == -1) {
+            System.out.println("");
+            System.out.println("No se encontro el empleado.");
+            System.out.println("");
+        } else {
+            ArrayList<ObjEmpleado> misEmpleados = Almacen.listarEmpleados();
+            ObjEmpleado empleado = misEmpleados.get(indice);
+
+            System.out.println("");
+            System.out.println("Empleado encontrado:");
+            System.out.println("Nombre: " + empleado.getNombre() + " " + empleado.getApellido1());
+            System.out.println("Cedula: " + empleado.getCedula());
+            System.out.println("");
+            
+            System.out.println("Digite la nueva Cedula: ");
+            String cedula = leer.nextLine();
+            empleado.setCedula(cedula);
+            
+            System.out.println("Digite el nuevo Primer Apellido: ");
+            String apellido1 = leer.nextLine();
+            empleado.setApellido1(apellido1);
+            
+            System.out.println("Digite el nuevo Segundo Apellido: ");
+            String apellido2 = leer.nextLine();
+            empleado.setApellido2(apellido2);
+
+            System.out.println("Digite el nuevo Telefono: ");
+            String telefono = leer.nextLine();
+            empleado.setTelefono(telefono);
+
+            System.out.println("Digite el nuevo Correo: ");
+            String correo = leer.nextLine();
+            empleado.setCorreo(correo);
+
+            System.out.println("Digite el nuevo Salario: ");
+            double salario = leer.nextDouble();
+            empleado.setSalario(salario);
+            leer.nextLine();
+
+            Almacen.editarEmpleado(indice, empleado);
+            Almacen.escribeArchivoEmpleados();
+
+            System.out.println("");
+            System.out.println("Empleado modificado correctamente.");
+            System.out.println("");
+        }
+    }
+    
+    public void borrarEmpleado() {
+        int indice = buscarEmpleado();
+        if (indice == -1) {
+            System.out.println("");
+            System.out.println("No se encontro el empleado.");
+            System.out.println("");
+        } else {
+            ArrayList<ObjEmpleado> misEmpleados = Almacen.listarEmpleados();
+            ObjEmpleado empleado = misEmpleados.get(indice);
+
+            System.out.println("");
+            System.out.println("Empleado encontrado:");
+            System.out.println("Nombre: " + empleado.getNombre() + " " + empleado.getApellido1());
+            System.out.println("Cedula: " + empleado.getCedula());
+            System.out.println("");
+
+            empleado.setEstado(0);
+
+            Almacen.editarEmpleado(indice, empleado);
+            Almacen.escribeArchivoEmpleados();
+
+            System.out.println("Empleado eliminado correctamente.");
+            System.out.println("");
+        }
+    }
+    
+    public void mostrarEmpleados() {
+        System.out.println("---------------------------------------");
+        System.out.println("|         LISTADO DE EMPLEADOS        |");
+        System.out.println("---------------------------------------");
+        System.out.println("");
+
+        ArrayList<ObjEmpleado> misEmpleados = Almacen.listarEmpleados();
+        for (int i = 0; i < misEmpleados.size(); i++) {
+            ObjEmpleado empleado = misEmpleados.get(i);
+            if (empleado.getEstado() == 1) {
+                System.out.println("Identificador: " + empleado.getId());
+                System.out.println("Cedula: "       + empleado.getCedula());
+                System.out.println("Nombre: "       + empleado.getNombre() + " " +
+                                                        empleado.getApellido1() + " " +
+                                                        empleado.getApellido2());
+                System.out.println("Telefono: "     + empleado.getTelefono());
+                System.out.println("Correo: "       + empleado.getCorreo());
+                System.out.println("Salario: "      + empleado.getSalario());
+                System.out.println("");
+                System.out.println("---------------------------------------");
+            }
         }
     }
     
@@ -491,6 +680,7 @@ public class Metodos {
                 System.out.println("Fecha invalida, intente de nuevo.");
             }
         } while (fechaSalida == null);
+        nuevaReservacion.setSalida(fechaSalida);
         
         // Calculo del monto
         ObjHabitacion habitacion = obtenerHabitacion(indiceHabitacion);  // Obtener la habitación seleccionada
@@ -506,6 +696,8 @@ public class Metodos {
         System.out.println("Monto total de la reservacion: " + monto);
         
         nuevaReservacion.setEstado(1);
+        
+        nuevaReservacion.setEstadoReservacion("Pendiente");
         
         Almacen.agregarReservacion(nuevaReservacion);
         Almacen.escribeArchivoReservaciones();
@@ -659,12 +851,13 @@ public class Metodos {
         for (int i = 0; i < misReservaciones.size(); i++) {
             ObjReservacion reservacion = misReservaciones.get(i);
             if (reservacion.getEstado() == 1) {
-                System.out.println("Identificador: " + reservacion.getId());
-                System.out.println("Habitacion: "    + reservacion.getIdHabitacion());
-                System.out.println("Cliente: "       + reservacion.getCedCliente());
-                System.out.println("Ingreso: "       + formato.format(reservacion.getIngreso()));
-                System.out.println("Salida: "        + formato.format(reservacion.getSalida()));
-                System.out.println("Monto: "         + reservacion.getMonto());
+                System.out.println("Identificador: "        + reservacion.getId());
+                System.out.println("Habitacion: "           + reservacion.getIdHabitacion());
+                System.out.println("Cliente: "              + reservacion.getCedCliente());
+                System.out.println("Ingreso: "              + formato.format(reservacion.getIngreso()));
+                System.out.println("Salida: "               + formato.format(reservacion.getSalida()));
+                System.out.println("Monto: "                + reservacion.getMonto());
+                System.out.println("Estado de la reserva: " + reservacion.getEstadoReservacion());
                 System.out.println("");
                 System.out.println("---------------------------------------");
             }
