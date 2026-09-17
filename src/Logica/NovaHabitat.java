@@ -153,8 +153,6 @@ public class NovaHabitat {
             
             operacion = leer.nextInt();
             
-            
-            
             switch (operacion) {
                 case 1: misMetodos.insertarClientes();
                         break;
@@ -187,6 +185,18 @@ public class NovaHabitat {
             System.out.println("");
             System.out.print("Opcion: ");
             operacion = leer.nextInt();
+            
+            switch (operacion) {
+                case 1: misMetodos.insertarEmpleado();
+                        break;
+                case 2: misMetodos.modificarEmpleado();
+                        break;
+                case 3: misMetodos.borrarEmpleado();
+                        break;
+                case 4: misMetodos.mostrarEmpleados();
+                        break;
+            }
+            
         }while (operacion < 5);
     }
     

@@ -179,7 +179,7 @@ public class Estructuras {
          System.out.println("Limpiamos el Archivo de Clientes");
          limpiarArchivo("Clientes");
          
-         //--Estructura para guardar los datos en el archivo.
+         //--Estructura para guardar los datos en el archivo
         try {
              System.out.println("Entrando en el Try"); 
              FileWriter escritor = new FileWriter("Clientes.txt", true);
@@ -288,8 +288,88 @@ public class Estructuras {
      // 5. MÓDULO DE EMPLEADOS
      // ------------------------------------------
      
+     public void escribeArchivoEmpleados() {
+         //-- Antes de escribir limpiamos el archivo
+         System.out.println("------------------------------------");
+         System.out.println("Limpiamos el Archivo de Clientes");
+         limpiarArchivo("Empleados");
+         
+          //--Estructura para guardar los datos en el archivo
+          try {
+               System.out.println("Entrando en el Try");
+               FileWriter escritor = new FileWriter("Empleados.txt", true);
+               //-- Variable para armar la linea de escritura
+               String linea;
+               //-- Recorrer la lista de Empleados para armar cada línea
+               for (int i = 0; i < listaEmpleados.size(); i++) {
+                   ObjEmpleado miEmpleado = listaEmpleados.get(i);
+                   
+                   linea = String.valueOf(miEmpleado.getId())   + ";" +
+                           miEmpleado.getCedula()               + ";" +
+                           miEmpleado.getNombre()               + ";" +
+                           miEmpleado.getApellido1()                + ";" +
+                           miEmpleado.getApellido2()                + ";" +
+                           miEmpleado.getTelefono()                 + ";" +
+                           miEmpleado.getCorreo()                   + ";" +
+                           String.valueOf(miEmpleado.getSalario())  + ";" +
+                           String.valueOf(miEmpleado.getEstado())   + ";\n" ;
+                   System.out.println("Escribiendo la linea: " + linea);
+                   escritor.write(linea);
+               }
+               escritor.write(10); // comando de cierre de línea
+               escritor.close();
+               
+          } catch (IOException ex) { //-- Captura de errores si falla el intento
+              JOptionPane.showMessageDialog(null, "Error al limpiar el archivo",
+                                        "Atención", JOptionPane.ERROR_MESSAGE);
+              System.out.println(ex.toString());
+          }
+          System.out.println("------------------------------------");
+     }
      
+     //--Métodos para leer el archivo de Empleados (Llenar la lista Empleados)
+     public void leerArchivoEmpleados() {
+         try {
+            //--Apertura del Archivo -- Fisica
+            FileReader miArchivo = new FileReader("Empleados.txt");
+            //-- Cargar en la memoria Ram ese archivo para leerlo
+            BufferedReader lector = new BufferedReader(miArchivo);
+
+            //--Variable para cargar las líneas de texto del archivo
+            String linea = lector.readLine(); //-- Auto Primera línea
+            //-- Variable para Controlar los segmentos de texto - Vector/Array Simples
+            String segmento[];
+
+            while (linea != null) {
+                //-- Dividir "linea" en cada separador ";"
+                // cada sub segmento se mete en la variable del objeto
+                segmento = linea.split(";");
+                if (!segmento[0].equals("")) {
+                    ObjEmpleado miEmpleado = new ObjEmpleado();
+                    miEmpleado.setId(Integer.parseInt(segmento[0]));
+                    miEmpleado.setCedula(segmento[1]);
+                    miEmpleado.setNombre(segmento[2]);
+                    miEmpleado.setApellido1(segmento[3]);
+                    miEmpleado.setApellido2(segmento[4]);
+                    miEmpleado.setTelefono(segmento[5]);
+                    miEmpleado.setCorreo(segmento[6]);
+                    miEmpleado.setSalario(Double.parseDouble(segmento[7]));
+                    miEmpleado.setEstado(Integer.parseInt(segmento[8]));
+
+                    listaEmpleados.add(miEmpleado);
+                }
+                linea = lector.readLine();  //-- Pasar a la siguiente linea
+            }
+
+        } catch (IOException ex) { //-- Captura de errores si falla el intento
+            JOptionPane.showMessageDialog(null, "Error al leer el archivo",
+                                            "Atención", JOptionPane.ERROR_MESSAGE);
+            System.out.println(ex.toString());
+        }
+
+     }
      
+     // ------------ Métodos de Trabajo (Clientes) ----------------
      
      // Insertar empleado en la lista
      public void agregarEmpleado(ObjEmpleado miEmpleado) {
@@ -336,7 +416,8 @@ public class Estructuras {
                          formato.format(miReservacion.getIngreso()) + ";" +
                          formato.format(miReservacion.getSalida())  + ";" +
                          String.valueOf(miReservacion.getMonto())   + ";" +
-                         String.valueOf(miReservacion.getEstado())  + ";\n" ;
+                         String.valueOf(miReservacion.getEstado())  + ";" +
+                         miReservacion.getEstadoReservacion()       + ";\n" ;
                  System.out.println("Escribiendo la linea: " + linea);
                  escritor.write(linea);
             }  
@@ -368,7 +449,7 @@ public class Estructuras {
              while (linea != null) {
                  if (!linea.trim().isEmpty()) {
                      segmento = linea.split(";");
-                     if (segmento.length >= 7 && !segmento[0].equals("")) {
+                     if (segmento.length >= 8 && !segmento[0].equals("")) {
                          try {
                               ObjReservacion miReservacion = new ObjReservacion();
                      
@@ -379,6 +460,7 @@ public class Estructuras {
                               miReservacion.setSalida(formato.parse(segmento[4]));
                               miReservacion.setMonto(Double.parseDouble(segmento[5]));
                               miReservacion.setEstado(Integer.parseInt(segmento[6]));
+                              miReservacion.setEstadoReservacion(segmento[7]);
                               listaReservaciones.add(miReservacion);
                          } catch (ParseException ex) {
                          System.out.print("Error al leer fecha: " + ex.toString());

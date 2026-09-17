@@ -20,6 +20,7 @@ public class ObjReservacion {
     private Date salida;
     private double monto;
     private int estado;
+    private String estadoReservacion;
     
 
     // Constructor
@@ -94,6 +95,14 @@ public class ObjReservacion {
 
     public void setEstado(int estado) {
         this.estado = estado;
+    }
+    
+    public String getEstadoReservacion() {
+        return estadoReservacion;
+    }
+
+    public void setEstadoReservacion(String estadoReservacion) {
+        this.estadoReservacion = estadoReservacion;
     }
     
 }
