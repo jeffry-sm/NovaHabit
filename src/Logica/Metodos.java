@@ -864,5 +864,74 @@ public class Metodos {
         }
     }
 
+    //--------------------------------------------
+    // Módulo de Check-In / Check-Out
+    //--------------------------------------------
+
+    public void registrarCheckIn() {
+        int indice = buscarReservacion();
+        if (indice == -1) {
+            System.out.println("");
+            System.out.println("No se encontro la reservacion.");
+            System.out.println("");
+        } else {
+            ArrayList<ObjReservacion> misReservaciones = Almacen.listarReservaciones();
+            ObjReservacion reservacion = misReservaciones.get(indice);
+
+            if (reservacion.getEstado() == 0) {
+                System.out.println("");
+                System.out.println("Esa reservacion fue eliminada.");
+                System.out.println("");
+            } else if (!reservacion.getEstadoReservacion().equals("Pendiente")) {
+                System.out.println("");
+                System.out.println("Esa reservacion ya tiene Check-In o Check-Out registrado (estado actual: "
+                                     + reservacion.getEstadoReservacion() + ").");
+                System.out.println("");
+            } else {
+                reservacion.setEstadoReservacion("Check-In");
+
+                Almacen.editarReservacion(indice, reservacion);
+                Almacen.escribeArchivoReservaciones();
+
+                System.out.println("");
+                System.out.println("Check-In registrado correctamente.");
+                System.out.println("Habitacion: " + reservacion.getIdHabitacion());
+                System.out.println("Cliente: "    + reservacion.getCedCliente());
+                System.out.println("");
+            }
+        }
+    }
+    
+    public void registrarCheckOut() {
+        int indice = buscarReservacion();
+        if (indice == -1) {
+            System.out.println("");
+            System.out.println("No se encontro la reservacion.");
+            System.out.println("");
+        } else {
+            ArrayList<ObjReservacion> misReservaciones = Almacen.listarReservaciones();
+            ObjReservacion reservacion = misReservaciones.get(indice);
+
+            if (!reservacion.getEstadoReservacion().equals("Check-In")) {
+                System.out.println("");
+                System.out.println("Esa reservacion no tiene un Check-In activo (estado actual: "
+                                     + reservacion.getEstadoReservacion() + ").");
+                System.out.println("");
+            } else {
+                reservacion.setEstadoReservacion("Check-Out");
+
+                Almacen.editarReservacion(indice, reservacion);
+                Almacen.escribeArchivoReservaciones();
+
+                System.out.println("");
+                System.out.println("Check-Out registrado correctamente.");
+                System.out.println("Habitacion: "     + reservacion.getIdHabitacion());
+                System.out.println("Cliente: "        + reservacion.getCedCliente());
+                System.out.println("Monto a cobrar: " + reservacion.getMonto());
+                System.out.println("");
+            }
+        }
+    }
+
     
 }
