@@ -255,6 +255,13 @@ public class NovaHabitat {
             System.out.println("");
             System.out.print("Opcion: ");
             operacion = leer.nextInt();
+            
+            switch (operacion) {
+                case 1: misMetodos.registrarCheckIn();
+                        break;
+                case 2: misMetodos.registrarCheckOut();
+                        break;
+            }
         }while (operacion < 3);
     }
     
