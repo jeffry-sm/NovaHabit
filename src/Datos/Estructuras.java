@@ -83,6 +83,7 @@ public class Estructuras {
     // Método para escribir el archivo de Habitaciones
     public void escribeArchivoHabitaciones() {
         //-- Antes de escribir limpiamos el archivo
+        System.out.print("");
         System.out.println("------------------------------------");
         System.out.println("Limpiamos el Archivo de Habitaciones");
         limpiarArchivo("Habitaciones");
@@ -112,6 +113,7 @@ public class Estructuras {
             System.out.println(ex.toString());
         }
         System.out.println("------------------------------------");
+        System.out.print("");
     }
     
      //--Métodos para leer el archivo de Habitaciones (Llenar la lista Habitaciones)

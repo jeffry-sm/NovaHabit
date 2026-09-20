@@ -55,6 +55,7 @@ public class NovaHabitat {
         int opcion = 0; //Variable Local/contexto
         //-- Inicio de la repetición do-while
         do{
+            System.out.println("");
             System.out.println("----------------------------------------");
             System.out.println("|             NOVA HABITAT             |");
             System.out.println("----------------------------------------");
@@ -102,6 +103,7 @@ public class NovaHabitat {
     public static void menuHabitaciones(){
         int operacion = 0; //Variable Local/contexto
         do{ // inicio de la repetición
+            System.out.println("");
             System.out.println("----------------------------------------");
             System.out.println("|           MENU HABITACIONES          |");
             System.out.println("----------------------------------------");
@@ -112,7 +114,8 @@ public class NovaHabitat {
             System.out.println("2. Modificar ");
             System.out.println("3. Borrar ");
             System.out.println("4. Consultar ");
-            System.out.println("5. Regresar ");
+            System.out.println("5. Buscar ");
+            System.out.println("6. Regresar ");
             System.out.println("----------------------------------------");
             System.out.println("");
             System.out.print("Opcion: ");
@@ -127,9 +130,11 @@ public class NovaHabitat {
                          break;         
                 case 4 : misMetodos.mostrarHabitaciones();
                          break;
+                case 5 : misMetodos.consultarHabitacion();
+                         break;
             }
 
-        }while (operacion < 5);
+        }while (operacion < 6);
     }
     
     //-- Método para el Menú de Clientes

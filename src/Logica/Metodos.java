@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
+import java.util.InputMismatchException;
 
 /**
  *    @author Jeffry SM
@@ -84,12 +85,25 @@ public class Metodos {
     }
     
     public int buscarHabitacion(){
+        System.out.println("");
         System.out.println("---------------------------------------");
         System.out.println("|         BUSCAR  HABITACION          |");
         System.out.println("---------------------------------------");
         System.out.println("");
-        System.out.println("Digite el identificador de la habitacion: ");
-        int id = leer.nextInt();
+
+        int id = 0;
+        boolean idValido = false;
+        do {
+            System.out.println("Digite el identificador de la habitacion: ");
+            try {
+                id = leer.nextInt();
+                idValido = true;
+            } catch (InputMismatchException ex) {
+                System.out.println("Debe digitar un numero entero.");
+                leer.next();
+            }
+        } while (!idValido);
+
         int indice = -1;
 
         ArrayList<ObjHabitacion> misHabitaciones = Almacen.listarHabitaciones();
@@ -104,6 +118,7 @@ public class Metodos {
     
     public void insertarHabitacion() {
         ObjHabitacion nuevaHabitacion = new ObjHabitacion();
+        System.out.println("");
         System.out.println("---------------------------------------");
         System.out.println("|       REGISTRAR HABITACION          |");
         System.out.println("---------------------------------------");
@@ -112,72 +127,217 @@ public class Metodos {
         int id = siguienteHabitacion();
         System.out.println("Identificador: " + id);
         nuevaHabitacion.setId(id);
-        leer.nextLine();
 
-        System.out.println("Digite el tipo de Habitacion: ");
-        String tipHab = leer.nextLine();
+        String tipHab;
+        do {
+            System.out.println("");
+            System.out.println("Digite el tipo de Habitacion: ");
+            tipHab = leer.nextLine().trim();
+            if (tipHab.isEmpty()) {
+                System.out.println("El tipo de habitacion no puede quedar vacio.");
+            }
+        } while (tipHab.isEmpty());
         nuevaHabitacion.setTipoHabitacion(tipHab);
 
-        System.out.println("Digite el nombre del Edificio: ");
-        String edificio = leer.nextLine();
+        String edificio;
+        do {
+            System.out.println("");
+            System.out.println("Digite el nombre del Edificio: ");
+            edificio = leer.nextLine().trim();
+            if (edificio.isEmpty()) {
+                System.out.println("El edificio no puede quedar vacio.");
+            }
+        } while (edificio.isEmpty());
         nuevaHabitacion.setEdificio(edificio);
 
-        System.out.println("Digite el numero de piso: ");
-        int piso = leer.nextInt();
+        int piso = 0;
+        boolean pisoValido = false;
+        do {
+            System.out.println("");
+            System.out.println("Digite el numero de piso: ");
+            try {
+                piso = leer.nextInt();
+                if (piso < 0) {
+                    System.out.println("El piso no puede ser negativo.");
+                } else {
+                    pisoValido = true;
+                }
+            } catch (InputMismatchException ex) {
+                System.out.println("Debe digitar un numero entero.");
+                leer.next();
+            }
+        } while (!pisoValido);
         nuevaHabitacion.setPiso(piso);
 
-        System.out.println("Digite el costo por noche de la habitacion: ");
-        double costo = leer.nextDouble();
+         double costo = 0;
+        boolean costoValido = false;
+        do {
+            System.out.println("");
+            System.out.println("Digite el costo por noche de la habitacion: ");
+            try {
+                costo = leer.nextDouble();
+                if (costo <= 0) {
+                    System.out.println("El costo debe ser mayor a cero.");
+                } else {
+                    costoValido = true;
+                }
+            } catch (InputMismatchException ex) {
+                System.out.println("Debe digitar un numero valido.");
+                leer.next();
+            }
+        } while (!costoValido);
+        leer.nextLine();
         nuevaHabitacion.setCostoPorNoche(costo);
 
         nuevaHabitacion.setEstado(1);
 
         Almacen.agregarHabitacion(nuevaHabitacion);
         Almacen.escribeArchivoHabitaciones();
+        
+        System.out.println("");
+        System.out.println("Habitacion registrada correctamente (ID: " + id + ").");
+        System.out.println("");
     }
     
     public void modificarHabitacion(){
         int indice = buscarHabitacion();
         if (indice == -1){
-            System.out.println("No se encontro la habitacion ");
+            System.out.println("");
+            System.out.println("No se encontro la habitacion.");
+            System.out.println("");
         } else {
             ArrayList<ObjHabitacion> misHabitaciones = Almacen.listarHabitaciones();
             ObjHabitacion habitacion = misHabitaciones.get(indice);
-
             leer.nextLine();
-            System.out.println("Digite el nuevo tipo de Habitacion: ");
-            String tipHab = leer.nextLine();
+
+            System.out.println("");
+            System.out.println("Habitacion encontrada:");
+            System.out.println("Tipo: "            + habitacion.getTipoHabitacion());
+            System.out.println("Edificio: "        + habitacion.getEdificio());
+            System.out.println("Piso: "            + habitacion.getPiso());
+            System.out.println("Costo por Noche: " + habitacion.getCostoPorNoche());
+            System.out.println("");
+
+            String tipHab;
+            do {
+                System.out.println("");
+                System.out.println("Digite el nuevo tipo de Habitacion: ");
+                tipHab = leer.nextLine().trim();
+                if (tipHab.isEmpty()) {
+                    System.out.println("El tipo de habitacion no puede quedar vacio.");
+                }
+            } while (tipHab.isEmpty());
             habitacion.setTipoHabitacion(tipHab);
 
-            System.out.println("Digite el nuevo nombre del Edificio: ");
-            String edificio = leer.nextLine();
+            String edificio;
+            do {
+                System.out.println("");
+                System.out.println("Digite el nuevo nombre del Edificio: ");
+                edificio = leer.nextLine().trim();
+                if (edificio.isEmpty()) {
+                    System.out.println("El edificio no puede quedar vacio.");
+                }
+            } while (edificio.isEmpty());
             habitacion.setEdificio(edificio);
 
-            System.out.println("Digite el nuevo numero de piso: ");
-            int piso = leer.nextInt();
+            int piso = 0;
+            boolean pisoValido = false;
+            do {
+                System.out.println("");
+                System.out.println("Digite el nuevo numero de piso: ");
+                try {
+                    piso = leer.nextInt();
+                    if (piso < 0) {
+                        System.out.println("El piso no puede ser negativo.");
+                    } else {
+                        pisoValido = true;
+                    }
+                } catch (InputMismatchException ex) {
+                    System.out.println("Debe digitar un numero entero.");
+                    leer.next();
+                }
+            } while (!pisoValido);
             habitacion.setPiso(piso);
 
-            System.out.println("Digite el nuevo costo por noche: ");
-            double costo = leer.nextDouble();
+            double costo = 0;
+            boolean costoValido = false;
+            do {
+                System.out.println("");
+                System.out.println("Digite el nuevo costo por noche: ");
+                try {
+                    costo = leer.nextDouble();
+                    if (costo <= 0) {
+                        System.out.println("El costo debe ser mayor a cero.");
+                    } else {
+                        costoValido = true;
+                    }
+                } catch (InputMismatchException ex) {
+                    System.out.println("Debe digitar un numero valido.");
+                    leer.next();
+                }
+            } while (!costoValido);
+            leer.nextLine();
             habitacion.setCostoPorNoche(costo);
 
             Almacen.editarHabitacion(indice, habitacion);
             Almacen.escribeArchivoHabitaciones();
+
+            System.out.println("");
+            System.out.println("Habitacion modificada correctamente.");
+            System.out.println("");
         }
     }
     
     public void borrarHabitacion(){
         int indice = buscarHabitacion();
         if (indice == -1){
-            System.out.println("No se encontro la habitacion ");
+            System.out.println("");
+            System.out.println("No se encontro la habitacion.");
+            System.out.println("");
         } else {
             ArrayList<ObjHabitacion> misHabitaciones = Almacen.listarHabitaciones();
             ObjHabitacion habitacion = misHabitaciones.get(indice);
 
-            habitacion.setEstado(0);
+            System.out.println("");
+            System.out.println("Habitacion encontrada:");
+            System.out.println("Tipo: "     + habitacion.getTipoHabitacion());
+            System.out.println("Edificio: " + habitacion.getEdificio());
+            System.out.println("");
 
-            Almacen.editarHabitacion(indice, habitacion);
-            Almacen.escribeArchivoHabitaciones();
+            if (habitacion.getEstado() == 0) {
+                System.out.println("Esa habitacion ya estaba eliminada.");
+                System.out.println("");
+            } else {
+                habitacion.setEstado(0);
+
+                Almacen.editarHabitacion(indice, habitacion);
+                Almacen.escribeArchivoHabitaciones();
+
+                System.out.println("Habitacion eliminada correctamente.");
+                System.out.println("");
+            }
+        }
+    }
+    
+    //-- Buscar una habitacion puntual y mostrar sus datos
+    public void consultarHabitacion(){
+        int indice = buscarHabitacion();
+        if (indice == -1){
+            System.out.println("");
+            System.out.println("No se encontro la habitacion.");
+            System.out.println("");
+        } else {
+            ObjHabitacion habitacion = obtenerHabitacion(indice);
+
+            System.out.println("");
+            System.out.println("Identificador: "   + habitacion.getId());
+            System.out.println("Tipo: "            + habitacion.getTipoHabitacion());
+            System.out.println("Edificio: "        + habitacion.getEdificio());
+            System.out.println("Piso: "            + habitacion.getPiso());
+            System.out.println("Costo por Noche: " + habitacion.getCostoPorNoche());
+            System.out.println("Estado: "          + (habitacion.getEstado() == 1 ? "Activa" : "Inactiva"));
+            System.out.println("");
+            System.out.println("---------------------------------------");
         }
     }
     
