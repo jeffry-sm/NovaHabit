@@ -283,6 +283,14 @@ public class NovaHabitat {
             System.out.println("");
             System.out.print("Opcion: ");
             operacion = leer.nextInt();
+            
+            switch (operacion) {
+                case 1: misMetodos.reporteReservaciones();
+                        break;
+                case 2: misMetodos.reporteOcupacion();
+                         break;
+            }
+            
         }while (operacion < 3);
     }
     
