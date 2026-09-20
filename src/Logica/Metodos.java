@@ -932,6 +932,94 @@ public class Metodos {
             }
         }
     }
+    
+    //--------------------------------------------
+    // Módulo de Reportes
+    //--------------------------------------------
 
+    public void reporteReservaciones() {
+        System.out.println("----------------------------------------");
+        System.out.println("|        REPORTE DE RESERVACIONES       |");
+        System.out.println("----------------------------------------");
+        System.out.println("");
+
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        ArrayList<ObjReservacion> misReservaciones = Almacen.listarReservaciones();
+
+        System.out.printf("%-5s %-10s %-14s %-12s %-12s %-10s %-10s%n",
+                "ID", "Habitacion", "Cliente", "Ingreso", "Salida", "Monto", "Estado");
+        System.out.println("--------------------------------------------------------------------");
+
+        for (int i = 0; i < misReservaciones.size(); i++) {
+            ObjReservacion reservacion = misReservaciones.get(i);
+            if (reservacion.getEstado() == 1) {
+                System.out.printf("%-5d %-10d %-14s %-12s %-12s %-10.2f %-10s%n",
+                        reservacion.getId(),
+                        reservacion.getIdHabitacion(),
+                        reservacion.getCedCliente(),
+                        formato.format(reservacion.getIngreso()),
+                        formato.format(reservacion.getSalida()),
+                        reservacion.getMonto(),
+                        reservacion.getEstadoReservacion());
+            }
+        }
+        System.out.println("");
+    }
+    
+    public void reporteOcupacion() {
+        System.out.println("----------------------------------------");
+        System.out.println("|         REPORTE DE OCUPACION          |");
+        System.out.println("----------------------------------------");
+        System.out.println("");
+
+        ArrayList<ObjHabitacion> misHabitaciones = Almacen.listarHabitaciones();
+        ArrayList<ObjReservacion> misReservaciones = Almacen.listarReservaciones();
+
+        int totalHabitaciones = 0;
+        int habitacionesOcupadas = 0;
+
+        System.out.printf("%-8s %-18s %-12s%n", "ID", "Tipo", "Estado");
+        System.out.println("----------------------------------------");
+
+        for (int i = 0; i < misHabitaciones.size(); i++) {
+            ObjHabitacion habitacion = misHabitaciones.get(i);
+            if (habitacion.getEstado() == 1) {
+                totalHabitaciones++;
+                boolean ocupada = false;
+
+                for (int j = 0; j < misReservaciones.size(); j++) {
+                    ObjReservacion reservacion = misReservaciones.get(j);
+                    if (reservacion.getIdHabitacion() == habitacion.getId()
+                            && reservacion.getEstado() == 1
+                            && reservacion.getEstadoReservacion().equals("Check-In")) {
+                        ocupada = true;
+                        break;
+                    }
+                }
+
+                if (ocupada) {
+                    habitacionesOcupadas++;
+                }
+
+                System.out.printf("%-8d %-18s %-12s%n", habitacion.getId(),
+                        habitacion.getTipoHabitacion(),
+                        ocupada ? "Ocupada" : "Disponible");
+            }
+        }
+
+        System.out.println("----------------------------------------");
+        System.out.println("");
+
+        double porcentaje = 0;
+        if (totalHabitaciones > 0) {
+            porcentaje = (habitacionesOcupadas * 100.0) / totalHabitaciones;
+        }
+
+        System.out.println("Habitaciones activas: "  + totalHabitaciones);
+        System.out.println("Habitaciones ocupadas: " + habitacionesOcupadas);
+        System.out.printf("Porcentaje de ocupacion: %.2f%%%n", porcentaje);
+        System.out.println("");
+    }
+    
     
 }
