@@ -144,20 +144,21 @@ public class NovaHabitat {
             System.out.println("----------------------------------------");
             System.out.println("|             MENU CLIENTES            |");
             System.out.println("----------------------------------------");
-            System.out.println("Ingrese una opcion (1-5) luego presione ");
+            System.out.println("Ingrese una opcion (1-6) luego presione ");
             System.out.println("la tecla enter.");
             System.out.println("");
             System.out.println("1. Insertar ");
             System.out.println("2. Modificar ");
             System.out.println("3. Borrar ");
             System.out.println("4. Consultar ");
-            System.out.println("5. Regresar ");
+            System.out.println("5. Buscar ");
+            System.out.println("6. Regresar ");
             System.out.println("----------------------------------------");
             System.out.println("");
             System.out.print("Opcion: ");
-            
+
             operacion = leer.nextInt();
-            
+
             switch (operacion) {
                 case 1: misMetodos.insertarClientes();
                         break;
@@ -167,8 +168,10 @@ public class NovaHabitat {
                         break;
                 case 4: misMetodos.mostrarClientes();
                         break;
+                case 5: misMetodos.consultarCliente();
+                        break;
             }
-        }while (operacion < 5);
+        }while (operacion < 6);
     }
     
     //-- Método para el Menú de Empleados
