@@ -366,6 +366,17 @@ public class Metodos {
     // Módulo de Clientes
     //--------------------------------------------
     
+    public int siguienteCliente() {
+        int resultado = 1;
+        ArrayList<ObjCliente> misClientes = Almacen.listarClientes();
+        for (int i = 0; i < misClientes.size(); i++){
+            if (resultado <= misClientes.get(i).getId()){
+                resultado = misClientes.get(i).getId() + 1;
+            }
+        }
+        return resultado;
+    }
+    
     public int buscarClienteActivoPorCedula(String cedula){
         ArrayList<ObjCliente> misClientes = Almacen.listarClientes();
         for (int i = 0; i < misClientes.size(); i++){
@@ -409,83 +420,124 @@ public class Metodos {
     }
  
     public void insertarClientes(){
-        //-- variable, instancia del objeto a usar
         ObjCliente nuevoCliente = new ObjCliente();
+        System.out.println("");
         System.out.println("---------------------------------------");
-        System.out.println("|         REGISTRAR CLIENTES          |");
+        System.out.println("|         REGISTRAR CLIENTES           |");
         System.out.println("---------------------------------------");
         System.out.println("");
-        
-        int id = siguienteEmpleado();
+
+        int id = siguienteCliente();
         System.out.println("Identificador: " + id);
         nuevoCliente.setId(id);
-        
-        leer.nextLine();
-        System.out.println("Digite la Cedula: ");
-        String cedula = leer.nextLine();
+
+        String cedula;
+        int indiceExistente;
+        do {
+            System.out.println("");
+            System.out.println("Digite la Cedula: ");
+            cedula = leer.nextLine().trim();
+            if (cedula.isEmpty()) {
+                System.out.println("La cedula no puede quedar vacia.");
+                indiceExistente = -1;
+            } else {
+                indiceExistente = buscarClienteActivoPorCedula(cedula);
+                if (indiceExistente != -1) {
+                    System.out.println("");
+                    System.out.println("Ya existe un cliente activo con esa cedula.");
+                }
+            }
+        } while (cedula.isEmpty() || indiceExistente != -1);
         nuevoCliente.setCedula(cedula);
-        
-        System.out.println("Digite el Nombre: ");
-        String nombre = leer.nextLine();
+
+        String nombre;
+        do {
+            System.out.println("");
+            System.out.println("Digite el Nombre: ");
+            nombre = leer.nextLine().trim();
+            if (nombre.isEmpty()) {
+                System.out.println("El nombre no puede quedar vacio.");
+            }
+        } while (nombre.isEmpty());
         nuevoCliente.setNombre(nombre);
-        
-        System.out.println("Digite el Primer Apellido: ");
-        String apellido1 = leer.nextLine();
+
+        String apellido1;
+        do {
+            System.out.println("");
+            System.out.println("Digite el Primer Apellido: ");
+            apellido1 = leer.nextLine().trim();
+            if (apellido1.isEmpty()) {
+                System.out.println("El primer apellido no puede quedar vacio.");
+            }
+        } while (apellido1.isEmpty());
         nuevoCliente.setApellido1(apellido1);
-        
+
+        System.out.println("");
         System.out.println("Digite el Segundo Apellido: ");
         String apellido2 = leer.nextLine();
         nuevoCliente.setApellido2(apellido2);
-        
+
+        System.out.println("");
         System.out.println("Digite el Telefono: ");
         String telefono = leer.nextLine();
         nuevoCliente.setTelefono(telefono);
-        
+
+        System.out.println("");
         System.out.println("Digite el Correo: ");
         String correo = leer.nextLine();
         nuevoCliente.setCorreo(correo);
-        
+
+        System.out.println("");
         System.out.println("Digite la Direccion: ");
         String direccion = leer.nextLine();
         nuevoCliente.setDireccion(direccion);
-        
-        int estado = 1;        
-        nuevoCliente.setEstado(estado);
-        
+
+        nuevoCliente.setEstado(1);
+
         Almacen.agregarCliente(nuevoCliente);
         Almacen.escribeArchivoClientes();
+
+        System.out.println("");
+        System.out.println("Cliente registrado correctamente (ID: " + id + ").");
+        System.out.println("");
     }
     
     public void modificarCliente(){
         int indice = buscarCliente();
         if (indice == -1){
-            System.out.println("No se encontro el cliente ");
+            System.out.println("");
+            System.out.println("No se encontro el cliente.");
+            System.out.println("");
         } else {
-            ArrayList<ObjCliente> misClientes = new ArrayList<>();
-            misClientes = Almacen.listarClientes();
-            System.out.println("Cedula: " + 
-                                misClientes.get(indice).getCedula()  );
-            System.out.println("Nombre: " + 
-                                misClientes.get(indice).getApellido1() + " " +
-                                misClientes.get(indice).getNombre());
-            
-            ObjCliente cliente = new ObjCliente();
-            cliente = misClientes.get(indice);
-            
-            System.out.println("Digite el Nuevo Telefono: ");
+            ArrayList<ObjCliente> misClientes = Almacen.listarClientes();
+            ObjCliente cliente = misClientes.get(indice);
+
+            System.out.println("");
+            System.out.println("Cliente encontrado:");
+            System.out.println("Cedula: " + cliente.getCedula());
+            System.out.println("Nombre: " + cliente.getNombre() + " " + cliente.getApellido1());
+            System.out.println("");
+
+            System.out.println("Digite el nuevo Telefono: ");
             String telefono = leer.nextLine();
             cliente.setTelefono(telefono);
 
-            System.out.println("Digite el Nuevo Correo: ");
+            System.out.println("");
+            System.out.println("Digite el nuevo Correo: ");
             String correo = leer.nextLine();
             cliente.setCorreo(correo);
 
-            System.out.println("Digite la Nueva Direccion: ");
+            System.out.println("");
+            System.out.println("Digite la nueva Direccion: ");
             String direccion = leer.nextLine();
-            cliente.setDireccion(direccion);   
-            
+            cliente.setDireccion(direccion);
+
             Almacen.editarCliente(indice, cliente);
             Almacen.escribeArchivoClientes();
+
+            System.out.println("");
+            System.out.println("Cliente modificado correctamente.");
+            System.out.println("");
         }
     }
     
@@ -493,45 +545,75 @@ public class Metodos {
     public void borrarCliente(){
         int indice = buscarCliente();
         if (indice == -1){
-            System.out.println("No se encontro el cliente ");
+            System.out.println("");
+            System.out.println("No se encontro el cliente.");
+            System.out.println("");
         } else {
-            ArrayList<ObjCliente> misClientes = new ArrayList<>();
-            misClientes = Almacen.listarClientes();
-            System.out.println("Cedula: " + 
-                                misClientes.get(indice).getCedula()  );
-            System.out.println("Nombre: " + 
-                                misClientes.get(indice).getApellido1() + " " +
-                                misClientes.get(indice).getNombre());
-            Almacen.quitarCliente(indice);
-            Almacen.escribeArchivoClientes();
-                                   // Procedencia, Mensaje o información
-            JOptionPane.showMessageDialog(null, "Cliente Borrado",
-                    "Atención", JOptionPane.INFORMATION_MESSAGE);
-                              // Titulo      Icono
-     }
-   }   
+            ArrayList<ObjCliente> misClientes = Almacen.listarClientes();
+            ObjCliente cliente = misClientes.get(indice);
+
+            System.out.println("");
+            System.out.println("Cliente encontrado:");
+            System.out.println("Cedula: " + cliente.getCedula());
+            System.out.println("Nombre: " + cliente.getNombre() + " " + cliente.getApellido1());
+            System.out.println("");
+
+            if (cliente.getEstado() == 0) {
+                System.out.println("Ese cliente ya estaba eliminado.");
+                System.out.println("");
+            } else {
+                cliente.setEstado(0);
+
+                Almacen.editarCliente(indice, cliente);
+                Almacen.escribeArchivoClientes();
+
+                System.out.println("");
+                System.out.println("Cliente eliminado correctamente.");
+                System.out.println("");
+            }
+        }
+    }
     public void mostrarClientes(){
         System.out.println("---------------------------------------");
-        System.out.println("|          LISTAR  CLIENTES           |");
+        System.out.println("|         LISTADO DE CLIENTES         |");
         System.out.println("---------------------------------------");
-        System.out.println("");        
-        
-        //--Nueva lista para trabajar localmente (clientes)
-        ArrayList<ObjCliente> misClientes = new ArrayList<>();
-        //-- Llenamos esta lista con una copia de la original
-        misClientes = Almacen.listarClientes();
-        //--Recorrer la copia de la lista, para extraer los objetos
-        for(int i = 0; i < misClientes.size();i++){
-            ObjCliente cliente = new ObjCliente();
-            cliente = misClientes.get(i);
-            
-            System.out.println("Id Cliente: " + cliente.getId() );
-            System.out.println("Nombre: " + cliente.getApellido1() +
-                               " " + cliente.getNombre());
-            System.out.println("Cedula " + cliente.getCedula());
-            System.out.println("Telefono: " + cliente.getTelefono() );
+        System.out.println("");
+
+        ArrayList<ObjCliente> misClientes = Almacen.listarClientes();
+        for (int i = 0; i < misClientes.size(); i++){
+            ObjCliente cliente = misClientes.get(i);
+            if (cliente.getEstado() == 1){
+                System.out.println("Id Cliente: " + cliente.getId());
+                System.out.println("Nombre: "     + cliente.getNombre() + " " + cliente.getApellido1());
+                System.out.println("Cedula: "     + cliente.getCedula());
+                System.out.println("Telefono: "   + cliente.getTelefono());
+                System.out.println("");
+                System.out.println("---------------------------------------");
+            }
+        }
+    }
+    
+    //-- Buscar un cliente puntual y mostrar sus datos
+    public void consultarCliente(){
+        int indice = buscarCliente();
+        if (indice == -1){
             System.out.println("");
-            System.out.println("---------------------------------------");
+            System.out.println("No se encontro el cliente.");
+            System.out.println("");
+        } else {
+            ObjCliente cliente = obtenerCliente(indice);
+
+            System.out.println("");
+            System.out.println("Id Cliente: " + cliente.getId());
+            System.out.println("Cedula: "     + cliente.getCedula());
+            System.out.println("Nombre: "     + cliente.getNombre() + " " +
+                                                  cliente.getApellido1() + " " +
+                                                  cliente.getApellido2());
+            System.out.println("Telefono: "   + cliente.getTelefono());
+            System.out.println("Correo: "     + cliente.getCorreo());
+            System.out.println("Direccion: "  + cliente.getDireccion());
+            System.out.println("Estado: "     + (cliente.getEstado() == 1 ? "Activo" : "Inactivo"));
+            System.out.println("");
         }
     }
     
