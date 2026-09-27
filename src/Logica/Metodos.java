@@ -900,6 +900,23 @@ public class Metodos {
     // Módulo de Reservaciones
     //--------------------------------------------
     
+    //-- Revisa si una habitacion ya tiene otra reservacion activa en ese rango de fechas
+    public boolean existeSolapamientoReserva(int idHabitacion, Date ingreso, Date salida, int idReservacionExcluir) {
+        ArrayList<ObjReservacion> misReservaciones = Almacen.listarReservaciones();
+        for (int i = 0; i < misReservaciones.size(); i++) {
+            ObjReservacion reservacion = misReservaciones.get(i);
+            if (reservacion.getId() != idReservacionExcluir
+                    && reservacion.getIdHabitacion() == idHabitacion
+                    && reservacion.getEstado() == 1
+                    && !reservacion.getEstadoReservacion().equals("Check-Out")
+                    && ingreso.before(reservacion.getSalida())
+                    && salida.after(reservacion.getIngreso())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     //--Método para obtener la siguiente Reservación
     public int siguienteReservacion() {
         int resultado = 1;
@@ -916,55 +933,68 @@ public class Metodos {
         System.out.println("---------------------------------------");
         System.out.println("|        BUSCAR  RESERVACION          |");
         System.out.println("---------------------------------------");
-        System.out.println(""); 
-        System.out.println("Digite el id de la reservacion: ");
-        //leer.nextLine();
-        int id = leer.nextInt();
-        int indice    = -1;
-        
+        System.out.println("");
 
+        int id = 0;
+        boolean idValido = false;
+        do {
+            System.out.println("Digite el id de la reservacion: ");
+            try {
+                id = leer.nextInt();
+                idValido = true;
+            } catch (InputMismatchException ex) {
+                System.out.println("Debe digitar un numero entero.");
+                leer.next();
+            }
+        } while (!idValido);
+
+        int indice = -1;
         ArrayList<ObjReservacion> misReservaciones = Almacen.listarReservaciones();
- 
-        for(int i = 0; i < misReservaciones.size();i++){
+        for (int i = 0; i < misReservaciones.size(); i++) {
             ObjReservacion reservacion = misReservaciones.get(i);
-            if (reservacion.getId() == id){
+            if (reservacion.getId() == id) {
                 indice = i;
                 break;
             }
-            
         }
         return indice;
     }
     
     
-    //-- Método para insertar Reservaciones
     public void insertarReservacion() {
-        
         ObjReservacion nuevaReservacion = new ObjReservacion();
-        
+
         System.out.println("---------------------------------------");
         System.out.println("|      REGISTRO DE RESERVACIONES      |");
         System.out.println("---------------------------------------");
         System.out.println("");
-        
+
         int id = siguienteReservacion();
         System.out.println("Identificador de la reservacion " + id);
         nuevaReservacion.setId(id);
-        leer.nextLine();
-        
+
         // Id de la habitacion
-        int idHabitacion;
-        int indiceHabitacion;
+        int idHabitacion = 0;
+        int indiceHabitacion = -1;
+        boolean habitacionValida = false;
         do {
             System.out.println("");
             System.out.println("Digite el id de la habitacion: ");
-            idHabitacion = leer.nextInt();
-            indiceHabitacion = buscarHabitacionActivaPorId(idHabitacion);
-            if (indiceHabitacion == -1) {
-                System.out.println("La habitacion digitada no existe o esta inactiva.");
-                System.out.println(""); 
+            try {
+                idHabitacion = leer.nextInt();
+                indiceHabitacion = buscarHabitacionActivaPorId(idHabitacion);
+                if (indiceHabitacion == -1) {
+                    System.out.println("");
+                    System.out.println("La habitacion digitada no existe o esta inactiva.");
+                } else {
+                    habitacionValida = true;
+                }
+            } catch (InputMismatchException ex) {
+                System.out.println("");
+                System.out.println("Debe digitar un numero entero.");
+                leer.next();
             }
-        } while (indiceHabitacion == -1);
+        } while (!habitacionValida);
         nuevaReservacion.setIdHabitacion(idHabitacion);
         leer.nextLine();
 
@@ -982,121 +1012,18 @@ public class Metodos {
             }
         } while (indiceCliente == -1);
         nuevaReservacion.setCedCliente(cedula);
-        
-        // Fecha de ingreso
+
+        // Fechas de ingreso y salida juntas, para poder corregir ambas si hay choque
         SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
         formato.setLenient(false);
-        Date fechaIngreso = null;
+        Date fechaIngreso;
+        Date fechaSalida;
+        boolean fechasValidas;
         do {
-            System.out.println("");
-            System.out.println("Digite la fecha (dd/MM/yyyy): ");
-            String textoFecha = leer.nextLine();
-            try {
-                fechaIngreso = formato.parse(textoFecha);
-            } catch (ParseException ex) {
-                System.out.println("Fecha invalida, intente de nuevo.");
-            }
-        } while (fechaIngreso == null);
-        nuevaReservacion.setIngreso(fechaIngreso);   
-        
-        // Fecha de salida
-        Date fechaSalida = null;
-        do {
-            System.out.println("");
-            System.out.println("Digite la fecha (dd/MM/yyyy): ");
-            String textoFecha = leer.nextLine();
-            try {
-                fechaSalida = formato.parse(textoFecha);
-                if (fechaSalida.before(fechaIngreso)) {
-                    System.out.println("La fecha de salida no puede ser anterior a la fecha de ingreso.");
-                    fechaSalida = null;
-                }
-            } catch (ParseException ex) {
-                System.out.println("Fecha invalida, intente de nuevo.");
-            }
-        } while (fechaSalida == null);
-        nuevaReservacion.setSalida(fechaSalida);
-        
-        // Calculo del monto
-        ObjHabitacion habitacion = obtenerHabitacion(indiceHabitacion);  // Obtener la habitación seleccionada
-        double costoPorNoche = habitacion.getCostoPorNoche();  // Costo por noche
-        // Calcular cantidad de noches
-        long diferencia = fechaSalida.getTime() - fechaIngreso.getTime();
-        long noches = diferencia / (1000 * 60 * 60 * 24);
-        double monto = noches * costoPorNoche;  // Calcular monto total
-        nuevaReservacion.setMonto(monto);
-        System.out.println("");
-        System.out.println("Cantidad de noches: " + noches);
-        System.out.println("Costo por noche: " + costoPorNoche);
-        System.out.println("Monto total de la reservacion: " + monto);
-        
-        nuevaReservacion.setEstado(1);
-        
-        nuevaReservacion.setEstadoReservacion("Pendiente");
-        
-        Almacen.agregarReservacion(nuevaReservacion);
-        Almacen.escribeArchivoReservaciones();
-        
-        System.out.println("");
-        System.out.println("Reservacion registrada correctamente.");
-        System.out.println("Identificador de la reservacion: " + id);
-    
-    }   
-    
-    // Método para modificar una Reservación existente
-    public void modificarReservacion() {
-        int indice = buscarReservacion();
-        if (indice == -1) {
-            System.out.println("");
-            System.out.println("No se encontro la reservacion.");
-            System.out.println("");
-        } else {
-            ArrayList<ObjReservacion> misReservaciones = Almacen.listarReservaciones();
-            ObjReservacion reservacion = misReservaciones.get(indice);
-            System.out.println("");
-            System.out.println("Reservacion encontrada:");
-            System.out.println("Habitacion: "   + reservacion.getIdHabitacion());
-            System.out.println("Cliente: "      + reservacion.getCedCliente());
-            System.out.println("Monto actual: " + reservacion.getMonto());
-            System.out.println("");
-            
-            // Id de la habitacion
-            int idHabitacion;
-            int indiceHabitacion;
-            do {
-                System.out.println("Digite el nuevo id de la habitacion: ");
-                idHabitacion = leer.nextInt();
-                indiceHabitacion = buscarHabitacionActivaPorId(idHabitacion);
-                if (indiceHabitacion == -1) {
-                    System.out.println("La habitacion digitada no existe o esta inactiva.");
-                    System.out.println("");
-                }
-            } while (indiceHabitacion == -1);
-            reservacion.setIdHabitacion(idHabitacion);
-            leer.nextLine();
-            
-            // Cedula del clinete
-            String cedula;
-            int indiceCliente;
+            fechaIngreso = null;
             do {
                 System.out.println("");
-                System.out.println("Digite la nueva cedula del cliente: ");
-                cedula = leer.nextLine();
-                indiceCliente = buscarClienteActivoPorCedula(cedula);
-                if (indiceCliente == -1) {
-                    System.out.println("El cliente digitado no existe o esta inactivo.");
-                    System.out.println("");
-                }
-            } while (indiceCliente == -1);
-            reservacion.setCedCliente(cedula);
-            
-            // Fecha de ingreso
-            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-            formato.setLenient(false);
-            Date fechaIngreso = null;
-            do {
-                System.out.println("");
-                System.out.println("Digite la nueva fecha de ingreso (dd/MM/yyyy): ");
+                System.out.println("Digite la fecha de ingreso (dd/MM/yyyy): ");
                 String textoFecha = leer.nextLine();
                 try {
                     fechaIngreso = formato.parse(textoFecha);
@@ -1104,46 +1031,187 @@ public class Metodos {
                     System.out.println("Fecha invalida, intente de nuevo.");
                 }
             } while (fechaIngreso == null);
-            reservacion.setIngreso(fechaIngreso);
 
-            // Fecha de salida
-            Date fechaSalida = null;
+            fechaSalida = null;
             do {
                 System.out.println("");
-                System.out.println("Digite la nueva fecha de salida (dd/MM/yyyy): ");
+                System.out.println("Digite la fecha de salida (dd/MM/yyyy): ");
                 String textoFecha = leer.nextLine();
                 try {
                     fechaSalida = formato.parse(textoFecha);
-                    if (fechaSalida.before(fechaIngreso)) {
-                        System.out.println("La fecha de salida no puede ser anterior a la fecha de ingreso.");
+                    if (!fechaSalida.after(fechaIngreso)) {
+                        System.out.println("La fecha de salida debe ser posterior a la fecha de ingreso.");
                         fechaSalida = null;
                     }
                 } catch (ParseException ex) {
                     System.out.println("Fecha invalida, intente de nuevo.");
                 }
             } while (fechaSalida == null);
-            reservacion.setSalida(fechaSalida);
-            
-            // Recalculo del monto con la habitacion y fechas actualizadas
-            ObjHabitacion habitacion = obtenerHabitacion(indiceHabitacion);
-            double costoPorNoche = habitacion.getCostoPorNoche();
-            long diferencia = fechaSalida.getTime() - fechaIngreso.getTime();
-            long noches = diferencia / (1000 * 60 * 60 * 24);
-            double monto = noches * costoPorNoche;
-            reservacion.setMonto(monto);
-            System.out.println("");
-            System.out.println("Cantidad de noches: "  + noches);
-            System.out.println("Costo por noche: "     + costoPorNoche);
-            System.out.println("Nuevo monto total: "   + monto);
-            
-            Almacen.editarReservacion(indice, reservacion);
-            Almacen.escribeArchivoReservaciones();
-            
-            System.out.println("");
-            System.out.println("Reservacion modificada correctamente.");
-            System.out.println("");
-          }    
+
+            if (existeSolapamientoReserva(idHabitacion, fechaIngreso, fechaSalida, -1)) {
+                System.out.println("");
+                System.out.println("Esa habitacion ya tiene una reservacion que se cruza con esas fechas.");
+                System.out.println("Digite el rango de fechas nuevamente.");
+                fechasValidas = false;
+            } else {
+                fechasValidas = true;
+            }
+        } while (!fechasValidas);
+        nuevaReservacion.setIngreso(fechaIngreso);
+        nuevaReservacion.setSalida(fechaSalida);
+
+        // Calculo del monto
+        ObjHabitacion habitacion = obtenerHabitacion(indiceHabitacion);
+        double costoPorNoche = habitacion.getCostoPorNoche();
+        long diferencia = fechaSalida.getTime() - fechaIngreso.getTime();
+        long noches = diferencia / (1000 * 60 * 60 * 24);
+        double monto = noches * costoPorNoche;
+        nuevaReservacion.setMonto(monto);
+        System.out.println("");
+        System.out.println("Cantidad de noches: " + noches);
+        System.out.println("Costo por noche: " + costoPorNoche);
+        System.out.println("Monto total de la reservacion: " + monto);
+
+        nuevaReservacion.setEstado(1);
+        nuevaReservacion.setEstadoReservacion("Pendiente");
+
+        Almacen.agregarReservacion(nuevaReservacion);
+        Almacen.escribeArchivoReservaciones();
+
+        System.out.println("");
+        System.out.println("Reservacion registrada correctamente (ID: " + id + ").");
+        System.out.println("");
     }
+    
+    // Método para modificar una Reservación existente
+    public void modificarReservacion() {
+     int indice = buscarReservacion();
+     if (indice == -1) {
+         System.out.println("");
+         System.out.println("No se encontro la reservacion.");
+         System.out.println("");
+     } else {
+         ArrayList<ObjReservacion> misReservaciones = Almacen.listarReservaciones();
+         ObjReservacion reservacion = misReservaciones.get(indice);
+
+         if (reservacion.getEstado() == 0) {
+             System.out.println("");
+             System.out.println("Esa reservacion fue eliminada, no se puede modificar.");
+             System.out.println("");
+             return;
+         }
+
+         System.out.println("");
+         System.out.println("Reservacion encontrada:");
+         System.out.println("Habitacion: "   + reservacion.getIdHabitacion());
+         System.out.println("Cliente: "      + reservacion.getCedCliente());
+         System.out.println("Monto actual: " + reservacion.getMonto());
+         System.out.println("");
+
+         // Id de la habitacion
+         int idHabitacion = 0;
+         int indiceHabitacion = -1;
+         boolean habitacionValida = false;
+         do {
+             System.out.println("Digite el nuevo id de la habitacion: ");
+             try {
+                 idHabitacion = leer.nextInt();
+                 indiceHabitacion = buscarHabitacionActivaPorId(idHabitacion);
+                 if (indiceHabitacion == -1) {
+                     System.out.println("La habitacion digitada no existe o esta inactiva.");
+                 } else {
+                     habitacionValida = true;
+                 }
+             } catch (InputMismatchException ex) {
+                 System.out.println("Debe digitar un numero entero.");
+                 leer.next();
+             }
+         } while (!habitacionValida);
+         reservacion.setIdHabitacion(idHabitacion);
+         leer.nextLine();
+
+         // Cedula del cliente
+         String cedula;
+         int indiceCliente;
+         do {
+             System.out.println("");
+             System.out.println("Digite la nueva cedula del cliente: ");
+             cedula = leer.nextLine();
+             indiceCliente = buscarClienteActivoPorCedula(cedula);
+             if (indiceCliente == -1) {
+                 System.out.println("El cliente digitado no existe o esta inactivo.");
+                 System.out.println("");
+             }
+         } while (indiceCliente == -1);
+         reservacion.setCedCliente(cedula);
+
+         // Fechas de ingreso y salida juntas
+         SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+         formato.setLenient(false);
+         Date fechaIngreso;
+         Date fechaSalida;
+         boolean fechasValidas;
+         do {
+             fechaIngreso = null;
+             do {
+                 System.out.println("");
+                 System.out.println("Digite la nueva fecha de ingreso (dd/MM/yyyy): ");
+                 String textoFecha = leer.nextLine();
+                 try {
+                     fechaIngreso = formato.parse(textoFecha);
+                 } catch (ParseException ex) {
+                     System.out.println("Fecha invalida, intente de nuevo.");
+                 }
+             } while (fechaIngreso == null);
+
+             fechaSalida = null;
+             do {
+                 System.out.println("");
+                 System.out.println("Digite la nueva fecha de salida (dd/MM/yyyy): ");
+                 String textoFecha = leer.nextLine();
+                 try {
+                     fechaSalida = formato.parse(textoFecha);
+                     if (!fechaSalida.after(fechaIngreso)) {
+                         System.out.println("La fecha de salida debe ser posterior a la fecha de ingreso.");
+                         fechaSalida = null;
+                     }
+                 } catch (ParseException ex) {
+                     System.out.println("Fecha invalida, intente de nuevo.");
+                 }
+             } while (fechaSalida == null);
+
+             if (existeSolapamientoReserva(idHabitacion, fechaIngreso, fechaSalida, reservacion.getId())) {
+                 System.out.println("");
+                 System.out.println("Esa habitacion ya tiene otra reservacion que se cruza con esas fechas.");
+                 System.out.println("Digite el rango de fechas nuevamente.");
+                 fechasValidas = false;
+             } else {
+                 fechasValidas = true;
+             }
+         } while (!fechasValidas);
+         reservacion.setIngreso(fechaIngreso);
+         reservacion.setSalida(fechaSalida);
+
+         // Recalculo del monto
+         ObjHabitacion habitacion = obtenerHabitacion(indiceHabitacion);
+         double costoPorNoche = habitacion.getCostoPorNoche();
+         long diferencia = fechaSalida.getTime() - fechaIngreso.getTime();
+         long noches = diferencia / (1000 * 60 * 60 * 24);
+         double monto = noches * costoPorNoche;
+         reservacion.setMonto(monto);
+         System.out.println("");
+         System.out.println("Cantidad de noches: " + noches);
+         System.out.println("Costo por noche: "    + costoPorNoche);
+         System.out.println("Nuevo monto total: "  + monto);
+
+         Almacen.editarReservacion(indice, reservacion);
+         Almacen.escribeArchivoReservaciones();
+
+         System.out.println("");
+         System.out.println("Reservacion modificada correctamente.");
+         System.out.println("");
+     }
+ }
     
     //-- Método para borrar (desactivar) una Reservación existente
     public void borrarReservacion() {
@@ -1163,13 +1231,18 @@ public class Metodos {
             System.out.println("Monto: "      + reservacion.getMonto());
             System.out.println("");
 
-            reservacion.setEstado(0);
+            if (reservacion.getEstado() == 0) {
+                System.out.println("Esa reservacion ya estaba eliminada.");
+                System.out.println("");
+            } else {
+                reservacion.setEstado(0);
 
-            Almacen.editarReservacion(indice, reservacion);
-            Almacen.escribeArchivoReservaciones();
+                Almacen.editarReservacion(indice, reservacion);
+                Almacen.escribeArchivoReservaciones();
 
-            System.out.println("Reservacion eliminada correctamente.");
-            System.out.println("");
+                System.out.println("Reservacion eliminada correctamente.");
+                System.out.println("");
+            }
         }
     }
     
@@ -1196,6 +1269,32 @@ public class Metodos {
                 System.out.println("");
                 System.out.println("---------------------------------------");
             }
+        }
+    }
+ 
+    
+    //-- Buscar una reservacion puntual y mostrar sus datos
+    public void consultarReservacion() {
+        int indice = buscarReservacion();
+        if (indice == -1) {
+            System.out.println("");
+            System.out.println("No se encontro la reservacion.");
+            System.out.println("");
+        } else {
+            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+            ArrayList<ObjReservacion> misReservaciones = Almacen.listarReservaciones();
+            ObjReservacion reservacion = misReservaciones.get(indice);
+
+            System.out.println("");
+            System.out.println("Identificador: "        + reservacion.getId());
+            System.out.println("Habitacion: "           + reservacion.getIdHabitacion());
+            System.out.println("Cliente: "              + reservacion.getCedCliente());
+            System.out.println("Ingreso: "              + formato.format(reservacion.getIngreso()));
+            System.out.println("Salida: "               + formato.format(reservacion.getSalida()));
+            System.out.println("Monto: "                + reservacion.getMonto());
+            System.out.println("Estado de la reserva: " + reservacion.getEstadoReservacion());
+            System.out.println("Estado: "               + (reservacion.getEstado() == 1 ? "Activa" : "Inactiva"));
+            System.out.println("");
         }
     }
 
