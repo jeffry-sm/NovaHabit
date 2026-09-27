@@ -621,6 +621,21 @@ public class Metodos {
     // Módulo de Empleados
     //--------------------------------------------
     
+    public int buscarEmpleadoActivoPorCedula(String cedula) {
+        ArrayList<ObjEmpleado> misEmpleados = Almacen.listarEmpleados();
+        for (int i = 0; i < misEmpleados.size(); i++) {
+            if (misEmpleados.get(i).getCedula().equals(cedula)
+                    && misEmpleados.get(i).getEstado() == 1) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public ObjEmpleado obtenerEmpleado(int indice) {
+        return Almacen.listarEmpleados().get(indice);
+    }
+    
     public int siguienteEmpleado() {
         int resultado = 1;
         ArrayList<ObjEmpleado> misEmpleados = Almacen.listarEmpleados();
@@ -637,15 +652,13 @@ public class Metodos {
         System.out.println("|          BUSCAR  EMPLEADO           |");
         System.out.println("---------------------------------------");
         System.out.println("");
-        System.out.println("Digite el identificador del empleado: ");
-        int id = leer.nextInt();
-        leer.nextLine();
+        System.out.println("Digite la cedula del empleado: ");
+        String cedula = leer.nextLine();
         int indice = -1;
 
         ArrayList<ObjEmpleado> misEmpleados = Almacen.listarEmpleados();
         for (int i = 0; i < misEmpleados.size(); i++) {
-            ObjEmpleado empleado = misEmpleados.get(i);
-            if (empleado.getId() == id) {
+            if (misEmpleados.get(i).getCedula().equals(cedula)) {
                 indice = i;
                 break;
             }
@@ -655,6 +668,7 @@ public class Metodos {
     
     public void insertarEmpleado() {
         ObjEmpleado nuevoEmpleado = new ObjEmpleado();
+        System.out.println("");
         System.out.println("---------------------------------------");
         System.out.println("|         REGISTRAR EMPLEADO          |");
         System.out.println("---------------------------------------");
@@ -664,34 +678,82 @@ public class Metodos {
         System.out.println("Identificador: " + id);
         nuevoEmpleado.setId(id);
 
-        System.out.println("Digite la Cedula: ");
-        String cedula = leer.nextLine();
+        String cedula;
+        int indiceExistente;
+        do {
+            System.out.println("");
+            System.out.println("Digite la Cedula: ");
+            cedula = leer.nextLine().trim();
+            if (cedula.isEmpty()) {
+                System.out.println("La cedula no puede quedar vacia.");
+                indiceExistente = -1;
+            } else {
+                indiceExistente = buscarEmpleadoActivoPorCedula(cedula);
+                if (indiceExistente != -1) {
+                    System.out.println("Ya existe un empleado activo con esa cedula.");
+                }
+            }
+        } while (cedula.isEmpty() || indiceExistente != -1);
         nuevoEmpleado.setCedula(cedula);
 
-        System.out.println("Digite el Nombre: ");
-        String nombre = leer.nextLine();
+        String nombre;
+        do {
+            System.out.println("");
+            System.out.println("Digite el Nombre: ");
+            nombre = leer.nextLine().trim();
+            if (nombre.isEmpty()) {
+                System.out.println("El nombre no puede quedar vacio.");
+            }
+        } while (nombre.isEmpty());
         nuevoEmpleado.setNombre(nombre);
 
-        System.out.println("Digite el Primer Apellido: ");
-        String apellido1 = leer.nextLine();
+        String apellido1;
+        do {
+            System.out.println("");
+            System.out.println("Digite el Primer Apellido: ");
+            apellido1 = leer.nextLine().trim();
+            if (apellido1.isEmpty()) {
+                System.out.println("El primer apellido no puede quedar vacio.");
+            }
+        } while (apellido1.isEmpty());
         nuevoEmpleado.setApellido1(apellido1);
 
+        System.out.println("");
         System.out.println("Digite el Segundo Apellido: ");
         String apellido2 = leer.nextLine();
         nuevoEmpleado.setApellido2(apellido2);
 
+        System.out.println("");
         System.out.println("Digite el Telefono: ");
         String telefono = leer.nextLine();
         nuevoEmpleado.setTelefono(telefono);
 
+        System.out.println("");
         System.out.println("Digite el Correo: ");
         String correo = leer.nextLine();
         nuevoEmpleado.setCorreo(correo);
 
-        System.out.println("Digite el Salario: ");
-        double salario = leer.nextDouble();
-        nuevoEmpleado.setSalario(salario);
+        double salario = 0;
+        boolean salarioValido = false;
+        do {
+            System.out.println("");
+            System.out.println("Digite el Salario (sin puntos ni comas, ejemplo: 450000): ");
+            try {
+                salario = leer.nextDouble();
+                if (salario <= 0) {
+                    System.out.println("");
+                    System.out.println("El salario debe ser mayor a cero.");
+                } else {
+                    salarioValido = true;
+                }
+            } catch (InputMismatchException ex) {
+                System.out.println("");
+                System.out.println("Debe digitar un numero valido.");
+                leer.next();
+            }
+        } while (!salarioValido);
         leer.nextLine();
+        nuevoEmpleado.setSalario(salario);
 
         nuevoEmpleado.setEstado(1);
 
@@ -718,18 +780,6 @@ public class Metodos {
             System.out.println("Nombre: " + empleado.getNombre() + " " + empleado.getApellido1());
             System.out.println("Cedula: " + empleado.getCedula());
             System.out.println("");
-            
-            System.out.println("Digite la nueva Cedula: ");
-            String cedula = leer.nextLine();
-            empleado.setCedula(cedula);
-            
-            System.out.println("Digite el nuevo Primer Apellido: ");
-            String apellido1 = leer.nextLine();
-            empleado.setApellido1(apellido1);
-            
-            System.out.println("Digite el nuevo Segundo Apellido: ");
-            String apellido2 = leer.nextLine();
-            empleado.setApellido2(apellido2);
 
             System.out.println("Digite el nuevo Telefono: ");
             String telefono = leer.nextLine();
@@ -739,10 +789,24 @@ public class Metodos {
             String correo = leer.nextLine();
             empleado.setCorreo(correo);
 
-            System.out.println("Digite el nuevo Salario: ");
-            double salario = leer.nextDouble();
-            empleado.setSalario(salario);
+            double salario = 0;
+            boolean salarioValido = false;
+            do {
+                System.out.println("Digite el nuevo Salario (sin puntos ni comas, ejemplo: 450000): ");
+                try {
+                    salario = leer.nextDouble();
+                    if (salario <= 0) {
+                        System.out.println("El salario debe ser mayor a cero.");
+                    } else {
+                        salarioValido = true;
+                    }
+                } catch (InputMismatchException ex) {
+                    System.out.println("Debe digitar un numero valido.");
+                    leer.next();
+                }
+            } while (!salarioValido);
             leer.nextLine();
+            empleado.setSalario(salario);
 
             Almacen.editarEmpleado(indice, empleado);
             Almacen.escribeArchivoEmpleados();
@@ -769,13 +833,18 @@ public class Metodos {
             System.out.println("Cedula: " + empleado.getCedula());
             System.out.println("");
 
-            empleado.setEstado(0);
+            if (empleado.getEstado() == 0) {
+                System.out.println("Ese empleado ya estaba eliminado.");
+                System.out.println("");
+            } else {
+                empleado.setEstado(0);
 
-            Almacen.editarEmpleado(indice, empleado);
-            Almacen.escribeArchivoEmpleados();
+                Almacen.editarEmpleado(indice, empleado);
+                Almacen.escribeArchivoEmpleados();
 
-            System.out.println("Empleado eliminado correctamente.");
-            System.out.println("");
+                System.out.println("Empleado eliminado correctamente.");
+                System.out.println("");
+            }
         }
     }
     
@@ -800,6 +869,30 @@ public class Metodos {
                 System.out.println("");
                 System.out.println("---------------------------------------");
             }
+        }
+    }
+    
+    //-- Buscar un empleado puntual y mostrar sus datos
+    public void consultarEmpleado() {
+        int indice = buscarEmpleado();
+        if (indice == -1) {
+            System.out.println("");
+            System.out.println("No se encontro el empleado.");
+            System.out.println("");
+        } else {
+            ObjEmpleado empleado = obtenerEmpleado(indice);
+
+            System.out.println("");
+            System.out.println("Identificador: " + empleado.getId());
+            System.out.println("Cedula: "        + empleado.getCedula());
+            System.out.println("Nombre: "        + empleado.getNombre() + " " +
+                                                     empleado.getApellido1() + " " +
+                                                     empleado.getApellido2());
+            System.out.println("Telefono: "      + empleado.getTelefono());
+            System.out.println("Correo: "        + empleado.getCorreo());
+            System.out.println("Salario: "       + empleado.getSalario());
+            System.out.println("Estado: "        + (empleado.getEstado() == 1 ? "Activo" : "Inactivo"));
+            System.out.println("");
         }
     }
     

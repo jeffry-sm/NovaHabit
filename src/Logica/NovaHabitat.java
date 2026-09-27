@@ -188,7 +188,8 @@ public class NovaHabitat {
             System.out.println("2. Modificar ");
             System.out.println("3. Borrar ");
             System.out.println("4. Consultar ");
-            System.out.println("5. Regresar ");
+            System.out.println("5. Buscar ");
+            System.out.println("6. Regresar ");
             System.out.println("----------------------------------------");
             System.out.println("");
             System.out.print("Opcion: ");
@@ -203,9 +204,11 @@ public class NovaHabitat {
                         break;
                 case 4: misMetodos.mostrarEmpleados();
                         break;
+                case 5: misMetodos.consultarEmpleado();
+                        break;
             }
             
-        }while (operacion < 5);
+        }while (operacion < 6);
     }
     
     
