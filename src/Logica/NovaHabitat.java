@@ -243,7 +243,7 @@ public class NovaHabitat {
                         break;        
                 case 4: misMetodos.mostrarReservaciones();
                         break;
-                case 5: misMetodos.buscarReservacion();
+                case 5: misMetodos.consultarReservacion();
                         break;
             }
         }while (operacion < 6);
