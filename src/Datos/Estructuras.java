@@ -25,6 +25,7 @@ public class Estructuras {
     // -----------------------------------------------
     // 1. LISTAS PRINCIPALES PARA ALMACENAR EN MEMORIA
     //------------------------------------------------
+    static ArrayList<ObjUsuario> listaUsuarios = new ArrayList<>();
     static ArrayList<ObjHabitacion> listaHabitaciones = new ArrayList<>();
     static ArrayList<ObjCliente> listaClientes = new ArrayList<>();
     static ArrayList<ObjEmpleado> listaEmpleados = new ArrayList<>();
@@ -37,7 +38,7 @@ public class Estructuras {
     }
      
     // ------------------------------------------
-    // 2. MÉTODOS PARA GESTIONAR CON ARCHIVOS
+    //  MÉTODOS PARA GESTIONAR CON ARCHIVOS
     // ------------------------------------------ 
     
     // Método para crear un archivo físico en el disco
@@ -76,9 +77,89 @@ public class Estructuras {
          }
      }
      
+
      // ------------------------------------------
-     // 3. MÓDULO DE Habitaciones
+     //  MÓDULO USUARIOS
      // ------------------------------------------
+     
+     public void escribeArchivoUsuarios() {
+        System.out.println("------------------------------------");
+        System.out.println("Limpiamos el Archivo de Usuarios");
+        limpiarArchivo("Usuarios");
+
+        try {
+            FileWriter escritor = new FileWriter("Usuarios.txt", true);
+            String linea;
+            for (int i = 0; i < listaUsuarios.size(); i++) {
+                ObjUsuario miUsuario = listaUsuarios.get(i);
+
+                linea = String.valueOf(miUsuario.getId()) + ";" +
+                        miUsuario.getUsuario()             + ";" +
+                        miUsuario.getContrasena()          + ";" +
+                        miUsuario.getRol()                 + ";" +
+                        String.valueOf(miUsuario.getEstado()) + ";\n";
+                System.out.println("Escribiendo la linea: " + linea);
+                escritor.write(linea);
+            }
+
+            escritor.write(10);
+            escritor.close();
+
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "Error al limpiar el archivo",
+                                            "Atención", JOptionPane.ERROR_MESSAGE);
+            System.out.println(ex.toString());
+        }
+        System.out.println("------------------------------------");
+    }
+
+    public void leerArchivoUsuarios() {
+        try {
+            FileReader miArchivo = new FileReader("Usuarios.txt");
+            BufferedReader lector = new BufferedReader(miArchivo);
+
+            String linea = lector.readLine();
+            String segmento[];
+
+            while (linea != null) {
+                segmento = linea.split(";");
+                if (segmento.length >= 5 && !segmento[0].equals("")) {
+                    ObjUsuario miUsuario = new ObjUsuario();
+                    miUsuario.setId(Integer.parseInt(segmento[0]));
+                    miUsuario.setUsuario(segmento[1]);
+                    miUsuario.setContrasena(segmento[2]);
+                    miUsuario.setRol(segmento[3]);
+                    miUsuario.setEstado(Integer.parseInt(segmento[4]));
+
+                    listaUsuarios.add(miUsuario);
+                }
+                linea = lector.readLine();
+            }
+
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "Error al leer el archivo",
+                                            "Atención", JOptionPane.ERROR_MESSAGE);
+            System.out.println(ex.toString());
+        }
+    }
+    
+    // ------------ Métodos de Trabajo (Usuarios) ------------
+    
+        public void agregarUsuario(ObjUsuario miUsuario) {
+        listaUsuarios.add(miUsuario);
+    }
+
+    public void editarUsuario(int indice, ObjUsuario miUsuario) {
+        listaUsuarios.set(indice, miUsuario);
+    }
+
+    public ArrayList<ObjUsuario> listarUsuarios() {
+        return new ArrayList<>(listaUsuarios);
+    }
+
+    // ------------------------------------------
+    //  MÓDULO DE HABITACIONES
+    // ------------------------------------------
      
     // Método para escribir el archivo de Habitaciones
     public void escribeArchivoHabitaciones() {
@@ -170,7 +251,7 @@ public class Estructuras {
      }  
      
      // ------------------------------------------
-     // 4. MÓDULO DE CLIENTES
+     //  MÓDULO DE CLIENTES
      // ------------------------------------------
      
      // ------------ Persistencia en Archivo ------------
@@ -287,7 +368,7 @@ public class Estructuras {
      
      
      // ------------------------------------------
-     // 5. MÓDULO DE EMPLEADOS
+     //  MÓDULO DE EMPLEADOS
      // ------------------------------------------
      
      public void escribeArchivoEmpleados() {
@@ -393,7 +474,7 @@ public class Estructuras {
      
      
      // ------------------------------------------
-     // 6. MÓDULO DE RESERVACIONES
+     //  MÓDULO DE RESERVACIONES
      // ------------------------------------------
      
      // ----------- Persistencia en Archivo ------------

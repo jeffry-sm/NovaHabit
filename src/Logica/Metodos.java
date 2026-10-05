@@ -4,6 +4,7 @@
  */
 package Logica;
 
+import Datos.ObjUsuario;
 import Datos.ObjHabitacion;
 import Datos.ObjCliente;
 import Datos.ObjEmpleado;
@@ -38,6 +39,7 @@ public class Metodos {
     
     public void nuevosArchivos() {
         
+        Almacen.crearArchivo("Usuarios");
         Almacen.crearArchivo("Habitaciones");
         Almacen.crearArchivo("Clientes");
         Almacen.crearArchivo("Empleados");
@@ -47,6 +49,28 @@ public class Metodos {
     
     public void cargarListas() {
         // Aqui vamos a poner los métodos que cargan en cada lista
+        Almacen.leerArchivoUsuarios();
+         if (Almacen.listarUsuarios().isEmpty()) {
+        ObjUsuario admin = new ObjUsuario();
+        admin.setId(1);
+        admin.setUsuario("admin");
+        admin.setContrasena("123");
+        admin.setRol("Administrador");
+        admin.setEstado(1);
+
+        ObjUsuario recepcion = new ObjUsuario();
+        recepcion.setId(2);
+        recepcion.setUsuario("recepcion");
+        recepcion.setContrasena("123");
+        recepcion.setRol("Recepcionista");
+        recepcion.setEstado(1);
+
+        Almacen.agregarUsuario(admin);
+        Almacen.agregarUsuario(recepcion);
+        Almacen.escribeArchivoUsuarios();
+    }
+        
+        
         Almacen.leerArchivoHabitaciones();
         Almacen.leerArchivoClientes();
         Almacen.leerArchivoEmpleados();
@@ -54,6 +78,279 @@ public class Metodos {
        
     }
     
+    
+    
+    //--------------------------------------------
+    // Módulo de Usuarios (Login)
+    //--------------------------------------------
+    
+    
+    public int siguienteUsuario() {
+        int resultado = 1;
+        ArrayList<ObjUsuario> misUsuarios = Almacen.listarUsuarios();
+        for (int i = 0; i < misUsuarios.size(); i++) {
+            if (resultado <= misUsuarios.get(i).getId()) {
+                resultado = misUsuarios.get(i).getId() + 1;
+            }
+        }
+        return resultado;
+    }
+
+    public int buscarUsuarioActivoPorUsuario(String usuario) {
+        ArrayList<ObjUsuario> misUsuarios = Almacen.listarUsuarios();
+        for (int i = 0; i < misUsuarios.size(); i++) {
+            if (misUsuarios.get(i).getUsuario().equals(usuario)
+                    && misUsuarios.get(i).getEstado() == 1) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    //-- Valida usuario/contrasena para el login. Devuelve el usuario si es correcto, null si no.
+    public ObjUsuario procesarLogin(String usuario, String contrasena) {
+        ArrayList<ObjUsuario> misUsuarios = Almacen.listarUsuarios();
+        for (int i = 0; i < misUsuarios.size(); i++) {
+            ObjUsuario miUsuario = misUsuarios.get(i);
+            if (miUsuario.getUsuario().equals(usuario) && miUsuario.getContrasena().equals(contrasena)) {
+                if (miUsuario.getEstado() == 1) {
+                    return miUsuario;
+                } else {
+                    System.out.println("El usuario ingresado esta inactivo.");
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    public int buscarUsuario() {
+        System.out.println("---------------------------------------");
+        System.out.println("|           BUSCAR  USUARIO           |");
+        System.out.println("---------------------------------------");
+        System.out.println("");
+        leer.nextLine(); // limpia el salto de linea pendiente del menu (nextInt)
+        System.out.println("Digite el nombre de usuario: ");
+        String usuario = leer.nextLine();
+        int indice = -1;
+
+        ArrayList<ObjUsuario> misUsuarios = Almacen.listarUsuarios();
+        for (int i = 0; i < misUsuarios.size(); i++) {
+            if (misUsuarios.get(i).getUsuario().equals(usuario)) {
+                indice = i;
+                break;
+            }
+        }
+        return indice;
+    }
+
+    public ObjUsuario obtenerUsuario(int indice) {
+        return Almacen.listarUsuarios().get(indice);
+    }
+
+    public void insertarUsuario() {
+        ObjUsuario nuevoUsuario = new ObjUsuario();
+        System.out.println("");
+        System.out.println("---------------------------------------");
+        System.out.println("|         REGISTRAR USUARIO           |");
+        System.out.println("---------------------------------------");
+        System.out.println("");
+
+        int id = siguienteUsuario();
+        System.out.println("Identificador: " + id);
+        nuevoUsuario.setId(id);
+        leer.nextLine();
+
+        String usuario;
+        int indiceExistente;
+        do {
+            System.out.println("");
+            System.out.println("Digite el nombre de usuario: ");
+            usuario = leer.nextLine().trim();
+            if (usuario.isEmpty()) {
+                System.out.println("El nombre de usuario no puede quedar vacio.");
+                indiceExistente = -1;
+            } else {
+                indiceExistente = buscarUsuarioActivoPorUsuario(usuario);
+                if (indiceExistente != -1) {
+                    System.out.println("Ya existe un usuario activo con ese nombre.");
+                }
+            }
+        } while (usuario.isEmpty() || indiceExistente != -1);
+        nuevoUsuario.setUsuario(usuario);
+
+        String contrasena;
+        do {
+            System.out.println("");
+            System.out.println("Digite la contrasena: ");
+            contrasena = leer.nextLine();
+            if (contrasena.isEmpty()) {
+                System.out.println("La contrasena no puede quedar vacia.");
+            }
+        } while (contrasena.isEmpty());
+        nuevoUsuario.setContrasena(contrasena);
+
+        int opcionRol = 0;
+        boolean rolValido = false;
+        do {
+            System.out.println("");
+            System.out.println("Seleccione el Rol:");
+            System.out.println("1. Administrador");
+            System.out.println("2. Recepcionista");
+            System.out.print("Opcion: ");
+            try {
+                opcionRol = leer.nextInt();
+                if (opcionRol == 1 || opcionRol == 2) {
+                    rolValido = true;
+                } else {
+                    System.out.println("Opcion invalida.");
+                }
+            } catch (InputMismatchException ex) {
+                System.out.println("Debe digitar un numero entero.");
+                leer.next();
+            }
+        } while (!rolValido);
+        leer.nextLine();
+
+        nuevoUsuario.setRol(opcionRol == 1 ? "Administrador" : "Recepcionista");
+        nuevoUsuario.setEstado(1);
+
+        Almacen.agregarUsuario(nuevoUsuario);
+        Almacen.escribeArchivoUsuarios();
+
+        System.out.println("");
+        System.out.println("Usuario registrado correctamente (ID: " + id + ").");
+        System.out.println("");
+    }
+
+    public void modificarUsuario() {
+        int indice = buscarUsuario();
+        if (indice == -1) {
+            System.out.println("");
+            System.out.println("No se encontro el usuario.");
+            System.out.println("");
+        } else {
+            ArrayList<ObjUsuario> misUsuarios = Almacen.listarUsuarios();
+            ObjUsuario usuarioEditar = misUsuarios.get(indice);
+
+            System.out.println("");
+            System.out.println("Usuario encontrado:");
+            System.out.println("Usuario: " + usuarioEditar.getUsuario());
+            System.out.println("Rol: "     + usuarioEditar.getRol());
+            System.out.println("");
+
+            String contrasena;
+            do {
+                System.out.println("Digite la nueva contrasena: ");
+                contrasena = leer.nextLine();
+                if (contrasena.isEmpty()) {
+                    System.out.println("La contrasena no puede quedar vacia.");
+                }
+            } while (contrasena.isEmpty());
+            usuarioEditar.setContrasena(contrasena);
+
+            int opcionRol = 0;
+            boolean rolValido = false;
+            do {
+                System.out.println("");
+                System.out.println("Seleccione el nuevo Rol:");
+                System.out.println("1. Administrador");
+                System.out.println("2. Recepcionista");
+                System.out.print("Opcion: ");
+                try {
+                    opcionRol = leer.nextInt();
+                    if (opcionRol == 1 || opcionRol == 2) {
+                        rolValido = true;
+                    } else {
+                        System.out.println("Opcion invalida.");
+                    }
+                } catch (InputMismatchException ex) {
+                    System.out.println("Debe digitar un numero entero.");
+                    leer.next();
+                }
+            } while (!rolValido);
+            leer.nextLine();
+            usuarioEditar.setRol(opcionRol == 1 ? "Administrador" : "Recepcionista");
+
+            Almacen.editarUsuario(indice, usuarioEditar);
+            Almacen.escribeArchivoUsuarios();
+
+            System.out.println("");
+            System.out.println("Usuario modificado correctamente.");
+            System.out.println("");
+        }
+    }
+
+    public void borrarUsuario() {
+        int indice = buscarUsuario();
+        if (indice == -1) {
+            System.out.println("");
+            System.out.println("No se encontro el usuario.");
+            System.out.println("");
+        } else {
+            ArrayList<ObjUsuario> misUsuarios = Almacen.listarUsuarios();
+            ObjUsuario usuarioEliminar = misUsuarios.get(indice);
+
+            System.out.println("");
+            System.out.println("Usuario encontrado:");
+            System.out.println("Usuario: " + usuarioEliminar.getUsuario());
+            System.out.println("Rol: "     + usuarioEliminar.getRol());
+            System.out.println("");
+
+            if (usuarioEliminar.getEstado() == 0) {
+                System.out.println("Ese usuario ya estaba eliminado.");
+                System.out.println("");
+            } else {
+                usuarioEliminar.setEstado(0);
+
+                Almacen.editarUsuario(indice, usuarioEliminar);
+                Almacen.escribeArchivoUsuarios();
+
+                System.out.println("Usuario eliminado correctamente.");
+                System.out.println("");
+            }
+        }
+    }
+
+    public void mostrarUsuarios() {
+        System.out.println("---------------------------------------");
+        System.out.println("|          LISTADO DE USUARIOS        |");
+        System.out.println("---------------------------------------");
+        System.out.println("");
+
+        ArrayList<ObjUsuario> misUsuarios = Almacen.listarUsuarios();
+        for (int i = 0; i < misUsuarios.size(); i++) {
+            ObjUsuario miUsuario = misUsuarios.get(i);
+            if (miUsuario.getEstado() == 1) {
+                System.out.println("Identificador: " + miUsuario.getId());
+                System.out.println("Usuario: "       + miUsuario.getUsuario());
+                System.out.println("Rol: "           + miUsuario.getRol());
+                System.out.println("");
+                System.out.println("---------------------------------------");
+            }
+        }
+    }
+
+    //-- Buscar un usuario puntual y mostrar sus datos
+    public void consultarUsuario() {
+        int indice = buscarUsuario();
+        if (indice == -1) {
+            System.out.println("");
+            System.out.println("No se encontro el usuario.");
+            System.out.println("");
+        } else {
+            ObjUsuario miUsuario = obtenerUsuario(indice);
+
+            System.out.println("");
+            System.out.println("Identificador: " + miUsuario.getId());
+            System.out.println("Usuario: "       + miUsuario.getUsuario());
+            System.out.println("Rol: "           + miUsuario.getRol());
+            System.out.println("Estado: "        + (miUsuario.getEstado() == 1 ? "Activo" : "Inactivo"));
+            System.out.println("");
+        }
+    }
+    
+
     //--------------------------------------------
     // Módulo de Habitaciones
     //--------------------------------------------
@@ -1379,6 +1676,7 @@ public class Metodos {
 
         SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
         ArrayList<ObjReservacion> misReservaciones = Almacen.listarReservaciones();
+        double totalGeneral = 0;
 
         System.out.printf("%-5s %-10s %-14s %-12s %-12s %-10s %-10s%n",
                 "ID", "Habitacion", "Cliente", "Ingreso", "Salida", "Monto", "Estado");
@@ -1395,8 +1693,11 @@ public class Metodos {
                         formato.format(reservacion.getSalida()),
                         reservacion.getMonto(),
                         reservacion.getEstadoReservacion());
+                totalGeneral += reservacion.getMonto();
             }
         }
+        System.out.println("");
+        System.out.printf("Monto total de reservaciones activas: %.2f%n", totalGeneral);
         System.out.println("");
     }
     
@@ -1412,14 +1713,15 @@ public class Metodos {
         int totalHabitaciones = 0;
         int habitacionesOcupadas = 0;
 
-        System.out.printf("%-8s %-18s %-12s%n", "ID", "Tipo", "Estado");
-        System.out.println("----------------------------------------");
+        System.out.printf("%-8s %-18s %-12s %-14s%n", "ID", "Tipo", "Estado", "Cliente Actual");
+        System.out.println("----------------------------------------------------");
 
         for (int i = 0; i < misHabitaciones.size(); i++) {
             ObjHabitacion habitacion = misHabitaciones.get(i);
             if (habitacion.getEstado() == 1) {
                 totalHabitaciones++;
                 boolean ocupada = false;
+                String clienteActual = "-";
 
                 for (int j = 0; j < misReservaciones.size(); j++) {
                     ObjReservacion reservacion = misReservaciones.get(j);
@@ -1427,6 +1729,7 @@ public class Metodos {
                             && reservacion.getEstado() == 1
                             && reservacion.getEstadoReservacion().equals("Check-In")) {
                         ocupada = true;
+                        clienteActual = reservacion.getCedCliente();
                         break;
                     }
                 }
@@ -1435,13 +1738,14 @@ public class Metodos {
                     habitacionesOcupadas++;
                 }
 
-                System.out.printf("%-8d %-18s %-12s%n", habitacion.getId(),
+                System.out.printf("%-8d %-18s %-12s %-14s%n", habitacion.getId(),
                         habitacion.getTipoHabitacion(),
-                        ocupada ? "Ocupada" : "Disponible");
+                        ocupada ? "Ocupada" : "Disponible",
+                        clienteActual);
             }
         }
 
-        System.out.println("----------------------------------------");
+        System.out.println("----------------------------------------------------");
         System.out.println("");
 
         double porcentaje = 0;

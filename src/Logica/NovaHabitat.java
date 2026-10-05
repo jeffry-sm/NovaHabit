@@ -7,6 +7,7 @@
 package Logica;
 
 import java.util.Scanner; // Library = Biblioteca
+import Datos.ObjUsuario;
 
 /**
  * @authorm Jeffry SM
@@ -18,83 +19,159 @@ public class NovaHabitat {
     
     // Llamado a la clase de los métodos
     static Metodos misMetodos = new Metodos();
-    
-    
-    //-- Usar una copia de una clase = Instanciar (New)
-    //-- instanciar en una variable
+
     static Scanner leer = new Scanner(System.in);//Variable Global
-    //--Arrays/Arreglos de 1 Dimensión
-    static String[] nombreCliente = new String[100];
+
+
+    public static void iniciarSesion() {
+        String usuario;
+        String contrasena;
+        ObjUsuario usuarioLogueado = null;
+        int intentos = 0;
+
+        do {
+            System.out.println("----------------------------------------");
+            System.out.println("|                LOGIN                 |");
+            System.out.println("----------------------------------------");
+            System.out.println("");
+
+            System.out.print("Usuario: ");
+            usuario = leer.next();
+
+            System.out.print("Contrasena: ");
+            contrasena = leer.next();
+            leer.nextLine();
+
+            usuarioLogueado = misMetodos.procesarLogin(usuario, contrasena);
+
+            if (usuarioLogueado != null) {
+                System.out.println("");
+                System.out.println("----------------------------------------");
+                System.out.println("Bienvenido(a): " + usuarioLogueado.getUsuario());
+                System.out.println("Rol: "           + usuarioLogueado.getRol());
+                System.out.println("----------------------------------------");
+                System.out.println("");
+
+                menuPrincipal(usuarioLogueado);
+            } else {
+                intentos++;
+                System.out.println("");
+                System.out.println("Usuario o contrasena incorrectos.");
+                System.out.println("Intentos restantes: " + (3 - intentos));
+                System.out.println("");
+            }
+        } while (usuarioLogueado == null && intentos < 3);
+
+        if (usuarioLogueado == null) {
+            System.out.println("----------------------------------------");
+            System.out.println("Se agotaron los 3 intentos.");
+            System.out.println("El programa se cerrara.");
+            System.out.println("----------------------------------------");
+        }
+    }
     
-    static String[] nombreEmpleado = new String[100];
-    //--Arrays/Arreglos de 2 Dimensiones
-    //-- Primer corchete Filas, el segundo las columnas
     
-    static String[][] reservacion = new String[100][6];
-    /* Columnas: 0 Identificador, 1 Habitacion, 2 Cliente, 3 Fecha In
-    4 Fecha Out, 5 Monto $$
-    */
-    static int numFactura = 258;
-    
-    
-    /**
-     * @param args the command line arguments
-     */
     
         //-- Método para el Menú Principal
-    public static void menuPrincipal(){
-        
-        //--Llenar el array Reservaciones con vacios opcion 2
-        for (int i =0; i < 100; i++ ){ //Filas
-            for (int j =0; j < 6; j++){ //Columnas
-                reservacion[i][j] = "";
-            }
-        }
-        
-       
-        int opcion = 0; //Variable Local/contexto
-        //-- Inicio de la repetición do-while
-        do{
-            System.out.println("");
+    public static void menuPrincipal(ObjUsuario usuarioLogueado){
+        boolean esAdmin = usuarioLogueado.getRol().equalsIgnoreCase("Administrador");
+
+        int opcion = 0;
+        do {
             System.out.println("----------------------------------------");
             System.out.println("|             NOVA HABITAT             |");
             System.out.println("----------------------------------------");
-            System.out.println("Ingrese una opcion (1-9) luego presione ");
+            System.out.println("Ingrese una opcion luego presione ");
             System.out.println("la tecla enter.");
             System.out.println("");
             System.out.println("1. Habitaciones ");
             System.out.println("2. Clientes");
-            System.out.println("3. Empleados"); //TAREA -- id Identificación
             System.out.println("4. Reservaciones");
             System.out.println("5. Check-In / Check-Out");
-            System.out.println("6. Reportes");
+            if (esAdmin) {
+                System.out.println("3. Empleados");
+                System.out.println("6. Reportes");
+                System.out.println("7. Usuarios");
+            }
             System.out.println("9. Salir");
             System.out.println("----------------------------------------");
             System.out.println("");
             System.out.print("Opcion: ");
             opcion = leer.nextInt();
 
-            //-- Condicional Switch /cambio ( parecido al if )
-            switch (opcion){
+            switch (opcion) {
                 case 1 : menuHabitaciones();
                          break;
                 case 2 : menuClientes();
                          break;
-                case 3 : menuEmpleados();
+                case 3 : if (esAdmin) {
+                             menuEmpleados();
+                         } else {
+                             System.out.println("");
+                             System.out.println("No tiene permiso para esa opcion.");
+                             System.out.println("");
+                         }
                          break;
                 case 4 : menuReservaciones();
                          break;
                 case 5 : menuRegistro();
                          break;
-                case 6 : menuReportes();
+                case 6 : if (esAdmin) {
+                             menuReportes();
+                         } else {
+                             System.out.println("");
+                             System.out.println("No tiene permiso para esa opcion.");
+                             System.out.println("");
+                         }
+                         break;
+                case 7 : if (esAdmin) {
+                             menuUsuarios();
+                         } else {
+                             System.out.println("");
+                             System.out.println("No tiene permiso para esa opcion.");
+                             System.out.println("");
+                         }
                          break;
             }
-            if (opcion < 0 ){
-                System.exit(0); 
+        } while (opcion != 9);
+    }
+    
+    
+    public static void menuUsuarios(){
+        int operacion = 0;
+        do {
+            System.out.println("----------------------------------------");
+            System.out.println("|             MENU USUARIOS            |");
+            System.out.println("----------------------------------------");
+            System.out.println("Ingrese una opcion (1-6) luego presione ");
+            System.out.println("la tecla enter.");
+            System.out.println("");
+            System.out.println("1. Insertar ");
+            System.out.println("2. Modificar ");
+            System.out.println("3. Borrar ");
+            System.out.println("4. Consultar ");
+            System.out.println("5. Buscar ");
+            System.out.println("6. Regresar ");
+            System.out.println("----------------------------------------");
+            System.out.println("");
+            System.out.print("Opcion: ");
+            operacion = leer.nextInt();
+
+            switch (operacion) {
+                case 1: misMetodos.insertarUsuario();
+                        break;
+                case 2: misMetodos.modificarUsuario();
+                        break;
+                case 3: misMetodos.borrarUsuario();
+                        break;
+                case 4: misMetodos.mostrarUsuarios();
+                        break;
+                case 5: misMetodos.consultarUsuario();
+                        break;
             }
-        } while (opcion < 7); //condición de finalización del ciclo
-        
-    }   
+        } while (operacion < 6);
+    }
+    
     
     //---------------------------------------
     // MENÚ DE HABITACIONES
@@ -312,12 +389,10 @@ public class NovaHabitat {
         // TODO code application logic here
         
         misMetodos.nuevosArchivos();
-        
         misMetodos.cargarListas();
-        
-        
-        menuPrincipal();
-        
+
+        iniciarSesion();
+
         int opcion = 1; 
         
         /* otra varaibale local, puede llamarse igual 
